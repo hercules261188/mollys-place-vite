@@ -1,0 +1,28 @@
+import { db } from '../init';
+
+import { IUser } from '../../../models';
+
+export interface IUsersResponse {
+	failure?: string;
+	success: IUser | null;
+}
+
+const collectionRef = db.collection('users');
+
+export const retrieveUser = async ({ id }: { id: string }) => {
+	const documentRef = collectionRef.doc(id);
+
+	const response = {} as IUsersResponse;
+
+	try {
+		const user = await documentRef.get();
+		response.success = {
+			id: user.id,
+			...user.data(),
+		} as IUser;
+	} catch (error) {
+		response.failure = error.message;
+	}
+
+	return response;
+};
