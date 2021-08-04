@@ -10,13 +10,7 @@ import { RootState } from './store';
 
 //
 // Types...
-export enum PostsActionTypes {
-	ADD_POST = 'posts/addPost',
-	REMOVE_POST = 'posts/removePost',
-	SET_POSTS = `posts/setPosts`,
-	UPDATE_POST = `posts/updatePost`,
-}
-export type PostsSlice = IPost[];
+type PostsSlice = IPost[];
 
 //
 // Initial state...
