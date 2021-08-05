@@ -1,3 +1,4 @@
+export * from './AddPost';
 export * from './BannerImage';
 export * from './Composer';
 export * from './Feed';

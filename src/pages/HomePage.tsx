@@ -5,6 +5,7 @@ import { Sizes, Strings } from '../constants';
 import { setSize } from '../helpers';
 
 import {
+	AddPostButton,
 	BannerImage,
 	Composer,
 	Feed,
@@ -35,9 +36,10 @@ export const HomePage: React.FC<IComponentProps> = () => {
 				pl={isLargeScreen ? setSize(Sizes.gap) : 0}
 			>
 				<BannerImage {...featuredImage} overlay={Overlay.light} />
-				<Composer />
+				{/* <Composer /> */}
 				<Feed />
 			</Flex>
+			<AddPostButton />
 		</Layout>
 	);
 };

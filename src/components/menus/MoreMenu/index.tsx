@@ -24,7 +24,7 @@ import { Colors, Sizes } from '../../../constants';
 
 interface IComponentProps {
 	cid?: string;
-	handleDelete: () => void;
+	handleDelete: (id: string) => void;
 	pid?: string;
 	rid?: string;
 	small?: boolean;
@@ -43,6 +43,8 @@ export const MoreMenu: React.FC<IComponentProps> = ({
 		Colors.light.primaryTextColor,
 		Colors.dark.primaryTextColor
 	);
+
+	const handleClick = () => handleDelete(rid ? rid : cid ? cid : pid!);
 
 	const toggleIsEditing = () =>
 		dispatch(
@@ -96,7 +98,7 @@ export const MoreMenu: React.FC<IComponentProps> = ({
 							w={setSize(1.111)}
 						/>
 					}
-					onClick={handleDelete}
+					onClick={handleClick}
 				>
 					<Text as="span">Delete</Text>
 				</MenuItem>

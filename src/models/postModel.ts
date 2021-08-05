@@ -1,6 +1,6 @@
 import { IUser } from './userModel';
 
-interface IPostImageDimensions {
+export interface IPostImageDimensions {
 	height: number;
 	width: number;
 }
@@ -11,6 +11,12 @@ interface IPostImage {
 	name: string;
 }
 
+export interface IPostRecipe {
+	directions: string;
+	image: string;
+	ingredients: string[];
+}
+
 interface IPostVideo {
 	id: string;
 	image: string;
@@ -19,6 +25,7 @@ interface IPostVideo {
 
 interface IPostContent {
 	image?: IPostImage;
+	recipe?: IPostRecipe;
 	text?: string;
 	video?: IPostVideo;
 }

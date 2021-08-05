@@ -17,17 +17,9 @@ interface IComponentProps {
 }
 
 export const Post: React.FC<IComponentProps> = ({ post }) => {
-	const {
-		bg,
-		content,
-		errMsg,
-		isEditing,
-		handleBgChange,
-		handleContentChange,
-		handleDelete,
-		handleSubmit,
-		toggleIsEditing,
-	} = usePost({ post });
+	const { isEditingPost, handleDelete } = usePost();
+
+	const isEditing = post.id === isEditingPost;
 
 	return (
 		<Flex
@@ -46,7 +38,7 @@ export const Post: React.FC<IComponentProps> = ({ post }) => {
 			/>
 			{isEditing ? (
 				<Flex
-					bgColor={bg ? bg : 'white'}
+					bgColor={post.background ? post.background : 'white'}
 					borderLeft="0.1rem solid #6B46C1"
 					borderRight="0.1rem solid #6B46C1"
 					flex={1}
@@ -54,17 +46,7 @@ export const Post: React.FC<IComponentProps> = ({ post }) => {
 					p={setSize(Sizes.gap / 2)}
 					w="full"
 				>
-					<PostEditor
-						bg={bg}
-						errMsg={errMsg}
-						handleBgChange={handleBgChange}
-						handleCancel={toggleIsEditing}
-						handleContentChange={handleContentChange}
-						handleSubmit={handleSubmit}
-						isEditing={!!isEditing}
-						preview={content.image || content.video ? content : undefined}
-						text={content.text}
-					/>
+					{<PostEditor post={post} />}
 				</Flex>
 			) : (
 				<PostBody background={post.background} content={post.content} />

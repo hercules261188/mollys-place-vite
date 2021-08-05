@@ -1,56 +1,67 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { IPost } from '../../../models';
 import { usePostMutations } from '../../../services';
 import {
+	selectPostBackground,
+	selectPostContent,
+	setPostBackground,
+	setPostContent,
+} from '../../../state/editor';
+import {
 	selectEditingPost,
 	toggleEditingPost,
 } from '../../../state/system';
 
-interface IUsePost {
-	post: IPost;
-}
+export const usePost = (post?: IPost) => {
+	const { deletePost, errMsg, updatePost } = usePostMutations();
 
-export const usePost = ({ post }: IUsePost) => {
-	const { createPost, deletePost, errMsg, updatePost } =
-		usePostMutations();
-
-	const [bg, setBg] = useState(post.background || undefined);
-	const [content, setContent] = useState<IPost['content']>(
-		post.content || {}
-	);
-
-	const isEditing = useSelector(selectEditingPost);
+	const background = useSelector(selectPostBackground);
+	const content = useSelector(selectPostContent);
+	const isEditingPost = useSelector(selectEditingPost);
 	const dispatch = useDispatch();
 
-	const handleBgChange = (value: string) => setBg(value);
+	useEffect(() => {
+		if (post?.background) dispatch(setPostBackground(post.background));
+		if (post?.content) dispatch(setPostContent(post.content));
+	}, [dispatch, post]);
+
+	const handleBgChange = (value: string) =>
+		dispatch(setPostBackground(value));
+
+	const handleCancel = () => {
+		dispatch(setPostContent(undefined));
+		dispatch(toggleEditingPost(``));
+	};
 
 	const handleContentChange = (newContent: IPost['content']) =>
-		setContent({ ...content, ...newContent });
+		dispatch(setPostContent(newContent));
 
-	const handleDelete = async () => await deletePost(post.id);
+	const handleDelete = async (id: string) => await deletePost(id);
 
 	const handleSubmit = async () => {
 		await updatePost({
-			background: bg,
+			background,
 			content,
 			post,
-			update: !!isEditing,
+			update: !!isEditingPost,
 		});
 
 		toggleIsEditing();
+		dispatch(setPostContent(undefined));
 	};
 
 	const toggleIsEditing = () =>
-		dispatch(toggleEditingPost(isEditing ? `` : post.id!));
+		dispatch(toggleEditingPost(isEditingPost ? `` : post!.id!));
 
 	return {
-		bg,
+		background,
 		content,
 		errMsg,
-		isEditing,
+		isEditingPost,
 		handleBgChange,
+		handleCancel,
 		handleContentChange,
 		handleDelete,
 		handleSubmit,

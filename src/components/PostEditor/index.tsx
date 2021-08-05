@@ -3,37 +3,34 @@ import React from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 
 import { setSize } from '../../helpers';
-import { IPost } from '../../models';
 import { Colors, Sizes } from '../../constants';
 
 import { Backgrounds } from './Backgrounds';
 import { Preview } from './Preview';
+import { useAddPost } from '../AddPost/helpers';
+import { IPost } from '../../models';
+import { usePost } from '../Post/helpers';
 
 export interface IPostEditorProps {
-	bg?: string;
-	errMsg: string;
-	handleBgChange: (value: string) => void;
-	handleCancel: () => void;
-	handleContentChange: ({ text }: { text: string }) => void;
-	handleSubmit: () => void;
-	isEditing: boolean;
-	preview?: IPost['content'];
-	text?: string;
+	post?: IPost;
 }
 
-export const PostEditor: React.FC<IPostEditorProps> = ({
-	bg,
-	errMsg,
-	handleBgChange,
-	handleCancel,
-	handleContentChange,
-	handleSubmit,
-	isEditing,
-	preview,
-	text,
-}) => {
+export const PostEditor: React.FC<IPostEditorProps> = ({ post }) => {
+	const {
+		background: bg,
+		content,
+		errMsg,
+		handleBgChange,
+		handleCancel,
+		handleContentChange,
+		handleSubmit,
+		isEditingPost,
+	} = post ? usePost(post) : useAddPost();
+
 	const handleTextChange: React.ChangeEventHandler<HTMLTextAreaElement> =
 		e => handleContentChange({ text: e.target.value });
+
+	const isEditing = post && post.id === isEditingPost;
 
 	return (
 		<>
@@ -48,7 +45,7 @@ export const PostEditor: React.FC<IPostEditorProps> = ({
 					outline: 'none',
 					overflow: 'hidden',
 				}}
-				value={text ? text : ''}
+				value={content?.text ? content.text : ''}
 			/>
 			{isEditing && (
 				<Flex justifyContent="flex-end" p={setSize(Sizes.gap)}>
@@ -74,8 +71,8 @@ export const PostEditor: React.FC<IPostEditorProps> = ({
 					</Button>
 				</Flex>
 			)}
-			{preview ? (
-				<Preview content={preview} />
+			{content?.image || content?.video ? (
+				<Preview content={content} />
 			) : (
 				<Backgrounds bg={bg} handleBgChange={handleBgChange} />
 			)}
