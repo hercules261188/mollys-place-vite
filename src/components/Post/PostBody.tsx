@@ -3,7 +3,12 @@ import React from 'react';
 
 import { IPost } from '../../models';
 import { Colors } from '../../constants';
-import { ImageDisplay, TextDisplay, VideoDisplay } from '../displays';
+import {
+	ImageDisplay,
+	RecipeDisplay,
+	TextDisplay,
+	VideoDisplay,
+} from '../displays';
 
 interface IComponentProps {
 	background?: IPost['background'];
@@ -32,6 +37,7 @@ export const PostBody: React.FC<IComponentProps> = ({
 				<TextDisplay background={background} text={content.text} />
 			)}
 			{content.image && <ImageDisplay image={content.image} />}
+			{content.recipe && <RecipeDisplay recipe={content.recipe} />}
 			{content.video && <VideoDisplay video={content.video} />}
 		</Flex>
 	);

@@ -4,24 +4,28 @@ import { FiPlusCircle } from 'react-icons/fi';
 
 import { Colors, Sizes } from '../../constants';
 import { setSize } from '../../helpers';
+import { IPostRecipe } from '../../models';
 
 import { Text } from '../Text';
 
-interface IComponentProps {}
+interface IComponentProps {
+	handleChange: ({}: IPostRecipe) => void;
+	ingredients?: string[];
+}
 
-export const IngredientsBox: React.FC<IComponentProps> = () => {
-	const [ingredients, setIngredients] = React.useState<string[]>([]);
+export const IngredientsBox: React.FC<IComponentProps> = ({
+	handleChange,
+	ingredients,
+}) => {
+	const addIngredient = () =>
+		handleChange({ ingredients: [...ingredients!, ``] } as IPostRecipe);
 
-	const addIngredient = () => setIngredients([...ingredients, ``]);
-
-	const handleChange = (index: number, value: string) =>
-		setIngredients(
-			ingredients.map((ingredient, idx) =>
+	const handleTextChange = (index: number, value: string) =>
+		handleChange({
+			ingredients: ingredients!.map((ingredient, idx) =>
 				idx === index ? value : ingredient
-			)
-		);
-
-	console.log(ingredients);
+			),
+		} as IPostRecipe);
 
 	return (
 		<Flex as="section" flex={1} flexDir="column">
@@ -41,12 +45,12 @@ export const IngredientsBox: React.FC<IComponentProps> = () => {
 					variant="ghost"
 				/>
 			</Flex>
-			{ingredients.map((_, index) => (
+			{ingredients!.map((_, index) => (
 				<IngredientInput
-					handleChange={handleChange}
+					handleChange={handleTextChange}
 					index={index}
 					key={index}
-					value={ingredients[index]}
+					value={ingredients![index]}
 				/>
 			))}
 		</Flex>

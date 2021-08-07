@@ -4,16 +4,22 @@ import TextareaAutosize from 'react-textarea-autosize';
 
 import { Sizes } from '../../constants';
 import { setSize } from '../../helpers';
+import { IPostRecipe } from '../../models';
 
 import { Text } from '../Text';
 
-interface IComponentProps {}
+interface IComponentProps {
+	handleChange: ({}: IPostRecipe) => void;
+	text?: string;
+}
 
-export const DirectionsBox: React.FC<IComponentProps> = () => {
-	const [directions, setDirections] = React.useState(``);
-
+export const DirectionsBox: React.FC<IComponentProps> = ({
+	handleChange,
+	text,
+}) => {
 	const handleTextChange: React.ChangeEventHandler<HTMLTextAreaElement> =
-		e => setDirections(e.target.value);
+		e => handleChange({ directions: e.target.value } as IPostRecipe);
+
 	return (
 		<Flex flexDir="column" mt={setSize(Sizes.gap / 2)}>
 			<Text as="h4">Directions</Text>
@@ -21,7 +27,7 @@ export const DirectionsBox: React.FC<IComponentProps> = () => {
 				onChange={handleTextChange}
 				minRows={3}
 				style={styles.textArea}
-				value={directions}
+				value={text}
 			/>
 		</Flex>
 	);

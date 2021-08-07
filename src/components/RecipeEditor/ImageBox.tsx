@@ -4,27 +4,37 @@ import { FiPlusCircle } from 'react-icons/fi';
 
 import { Colors, Sizes } from '../../constants';
 import { setSize } from '../../helpers';
+import { IPost, IPostRecipe } from '../../models';
+import { useAddPost } from '../AddPost/helpers';
 import { Text } from '../Text';
 
-interface IComponentProps {}
+interface IComponentProps {
+	handleChange: ({}: IPostRecipe) => void;
+	preview?: IPostRecipe['image'];
+}
 
-export const ImageBox: React.FC<IComponentProps> = () => {
+export const ImageBox: React.FC<IComponentProps> = ({
+	handleChange,
+	preview,
+}) => {
+	const { processImage } = useAddPost();
+	const [errMsg, setErrMsg] = React.useState(``);
 	const [image, setImage] = React.useState<File | null>(null);
-	const [preview, setPreview] = React.useState<string | null>(null);
 
 	const imageInputRef = React.useRef<HTMLInputElement>(null);
 
-	const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = e =>
-		setImage(e.target.files ? e.target.files[0] : null);
+	const handleFileChange: React.ChangeEventHandler<HTMLInputElement> =
+		async e => setImage(e.target.files ? e.target.files[0] : null);
 
 	const handleClick = () => imageInputRef.current?.click();
 
-	const getPreview = (image: File) => {
-		const reader = new FileReader();
-		reader.onloadend = () => {
-			setPreview(reader.result as string);
-		};
-		reader.readAsDataURL(image);
+	const getPreview = async (image: File) => {
+		const processedImage = await processImage(image);
+		if (processedImage.failure) {
+			setErrMsg(processedImage.failure);
+		} else {
+			handleChange(processedImage.success as IPostRecipe);
+		}
 	};
 
 	React.useEffect(() => {
@@ -35,9 +45,11 @@ export const ImageBox: React.FC<IComponentProps> = () => {
 		<Flex
 			border={setSize(0.056)}
 			borderRadius={setSize(Sizes.borderRadius)}
+			flexDir="column"
 		>
-			{preview ? (
-				<Image objectFit="cover" src={preview} />
+			<Text as="h4">Image</Text>
+			{preview?.data ? (
+				<Image alt={preview.name} objectFit="cover" src={preview.data} />
 			) : (
 				<IconButton
 					aria-label="upload image"

@@ -1,17 +1,52 @@
-import { Flex } from '@chakra-ui/react';
+import { Flex, Input } from '@chakra-ui/react';
 import React from 'react';
 
 import { Colors, Sizes } from '../../constants';
 import { setSize } from '../../helpers';
+import { IPost, IPostImageDimensions, IPostRecipe } from '../../models';
+import { useAddPost } from '../AddPost/helpers';
+import { usePost } from '../Post/helpers';
+import { Text } from '../Text';
 
 import { DescriptionBox } from './DescriptionBox';
 import { DirectionsBox } from './DirectionsBox';
 import { ImageBox } from './ImageBox';
 import { IngredientsBox } from './IngredientsBox';
 
-interface IComponentProps {}
+interface IComponentProps {
+	post: IPost;
+}
 
-export const RecipeEditor: React.FC<IComponentProps> = () => {
+interface IRecipeChangeProps {
+	[x: string]: string | string[] | IPostRecipe['image'];
+}
+
+export const RecipeEditor: React.FC<IComponentProps> = ({ post }) => {
+	const {
+		content,
+		errMsg,
+		handleCancel,
+		handleContentChange,
+		handleSubmit,
+	} = post ? usePost(post) : useAddPost();
+
+	const initialState: IPostRecipe = {
+		description: ``,
+		directions: ``,
+		image: {} as IPostRecipe['image'],
+		ingredients: [] as IPostRecipe['ingredients'],
+		name: ``,
+	};
+
+	const recipe = content ? content.recipe : initialState;
+
+	console.log(recipe);
+
+	const handleChange = (change: IPostRecipe) =>
+		handleContentChange({
+			recipe: { ...recipe!, ...change },
+		} as IPost['content']);
+
 	return (
 		<Flex
 			as="article"
@@ -25,12 +60,33 @@ export const RecipeEditor: React.FC<IComponentProps> = () => {
 					flexDir="column"
 					mr={setSize(Sizes.gap)}
 				>
-					<ImageBox />
-					<DescriptionBox />
+					<Text as="h4">Name</Text>
+					<Input
+						_hover={{ borderColor: Colors.dark.surfaceColor }}
+						border={`${setSize(0.056)} solid`}
+						borderColor={Colors.dark.surfaceColor}
+						mb={setSize(Sizes.gap / 2)}
+						onChange={e =>
+							handleChange({ name: e.target.value } as IPostRecipe)
+						}
+						type="text"
+						value={recipe?.name}
+					/>
+					<ImageBox handleChange={handleChange} preview={recipe?.image} />
+					<DescriptionBox
+						handleChange={handleChange}
+						text={recipe?.description}
+					/>
 				</Flex>
-				<IngredientsBox />
+				<IngredientsBox
+					handleChange={handleChange}
+					ingredients={recipe?.ingredients}
+				/>
 			</Flex>
-			<DirectionsBox />
+			<DirectionsBox
+				handleChange={handleChange}
+				text={recipe?.directions}
+			/>
 		</Flex>
 	);
 };

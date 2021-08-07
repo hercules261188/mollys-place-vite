@@ -12,9 +12,11 @@ interface IPostImage {
 }
 
 export interface IPostRecipe {
+	description: string;
 	directions: string;
-	image: string;
+	image: IPostImage;
 	ingredients: string[];
+	name: string;
 }
 
 interface IPostVideo {

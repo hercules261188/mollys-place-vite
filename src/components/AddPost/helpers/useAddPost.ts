@@ -96,7 +96,7 @@ export const useAddPost = () => {
 				dispatch(setPostErrMsg(response.failure));
 			} else {
 				dispatch(setPostErrMsg(''));
-				handleContentChange(response.success);
+				handleContentChange(response.success as IPost['content']);
 			}
 		} else {
 			dispatch(setPostErrMsg('Invalid file type provided.'));
@@ -134,6 +134,7 @@ export const useAddPost = () => {
 		isComposingRecipe,
 		isComposingVideo,
 		isEditingPost,
+		processImage,
 		submission,
 		toggleImageSubmit,
 		toggleRecipeSubmit,
