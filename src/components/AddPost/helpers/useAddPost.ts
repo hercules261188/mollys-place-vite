@@ -19,9 +19,11 @@ import {
 } from '../../../state/editor';
 import {
 	selectComposingImage,
+	selectComposingRecipe,
 	selectComposingVideo,
 	selectEditingPost,
 	toggleComposingImage,
+	toggleComposingRecipe,
 	toggleComposingVideo,
 	toggleEditingPost,
 } from '../../../state/system';
@@ -35,6 +37,7 @@ export const useAddPost = () => {
 	const currentUser = useSelector(selectCurrentUser);
 	const errMsg = useSelector(selectPostErrMsg);
 	const isComposingImage = useSelector(selectComposingImage);
+	const isComposingRecipe = useSelector(selectComposingRecipe);
 	const isComposingVideo = useSelector(selectComposingVideo);
 	const isEditingPost = useSelector(selectEditingPost);
 	const submission = useSelector(selectPostSubmission);
@@ -48,6 +51,9 @@ export const useAddPost = () => {
 	const _editorReset = () => {
 		dispatch(setPostBackground(undefined));
 		dispatch(setPostContent(undefined));
+		isComposingImage && toggleImageSubmit();
+		isComposingRecipe && toggleRecipeSubmit();
+		isComposingVideo && toggleVideoSubmit();
 	};
 
 	const handleBgChange = (value: string) =>
@@ -111,6 +117,7 @@ export const useAddPost = () => {
 	};
 
 	const toggleImageSubmit = () => dispatch(toggleComposingImage());
+	const toggleRecipeSubmit = () => dispatch(toggleComposingRecipe());
 	const toggleVideoSubmit = () => dispatch(toggleComposingVideo());
 
 	return {
@@ -124,10 +131,12 @@ export const useAddPost = () => {
 		handleSubmission,
 		handleSubmit,
 		isComposingImage,
+		isComposingRecipe,
 		isComposingVideo,
 		isEditingPost,
 		submission,
 		toggleImageSubmit,
+		toggleRecipeSubmit,
 		toggleVideoSubmit,
 	};
 };

@@ -6,9 +6,12 @@ import { Sizes } from '../../../constants';
 import { useAddPost } from '../helpers';
 
 import { PostEditor } from '../../PostEditor';
+import { RecipeEditor } from '../../RecipeEditor';
 
-export const ModalBody: React.FC = () => {
-	const { bg } = useAddPost();
+interface IComponentProps {}
+
+export const ModalBody: React.FC<IComponentProps> = () => {
+	const { background: bg, isComposingRecipe } = useAddPost();
 
 	return (
 		<Flex
@@ -20,7 +23,7 @@ export const ModalBody: React.FC = () => {
 			p={setSize(Sizes.gap / 2)}
 			w="full"
 		>
-			<PostEditor />
+			{isComposingRecipe ? <RecipeEditor /> : <PostEditor />}
 		</Flex>
 	);
 };

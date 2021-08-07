@@ -4,7 +4,6 @@ import React from 'react';
 
 import { useSelector } from 'react-redux';
 import { selectCurrentUser } from '../../state/user';
-import { selectEditingComment } from '../../state/system';
 
 import { setSize } from '../../helpers';
 import { IPost, IPostComment } from '../../models';
@@ -23,15 +22,13 @@ interface IComponentProps {
 }
 
 export const Comment: React.FC<IComponentProps> = ({ comment, post }) => {
-	const { handleDelete, toggleIsReplying } = useComment({
+	const { handleDelete, isEditing, toggleIsReplying } = useComment({
 		cid: comment.id,
 		creator: comment.creator,
 		post,
 	});
 
 	const currentUser = useSelector(selectCurrentUser);
-	const commentId = useSelector(selectEditingComment);
-	const isEditing = commentId === comment.id;
 
 	const bgColor = useColorModeValue(
 		Colors.light.surfaceColor,

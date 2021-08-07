@@ -90,17 +90,13 @@ export const processEntry = ({
 	} else if (cid && post && !content && !rid) {
 		console.log(`Deleting comment...`);
 		let _updatedPost = {} as IPost;
-		if (Object.keys(post.comments!).length > 1) {
-			_updatedPost = {
-				...post,
-				comments: removeCommentOrReply({
-					object: post.comments,
-					entryToRemove: cid!,
-				}),
-			};
-		} else {
-			delete _updatedPost.comments;
-		}
+		_updatedPost = {
+			...post,
+			comments: removeCommentOrReply({
+				object: post.comments,
+				entryToRemove: cid!,
+			}),
+		};
 
 		_postObj = _updatedPost;
 	} else if (cid && post && content && !update) {
@@ -159,23 +155,19 @@ export const processEntry = ({
 	} else if (cid && !content && post && rid) {
 		console.log(`Deleting reply...`);
 		let _updatedPost = {} as IPost;
-		if (Object.keys(post.comments![cid].replies!).length > 1) {
-			_updatedPost = {
-				...post,
-				comments: {
-					...post.comments,
-					[cid]: {
-						...post.comments![cid],
-						replies: removeCommentOrReply({
-							object: post.comments![cid].replies,
-							entryToRemove: rid!,
-						}),
-					},
+		_updatedPost = {
+			...post,
+			comments: {
+				...post.comments,
+				[cid]: {
+					...post.comments![cid],
+					replies: removeCommentOrReply({
+						object: post.comments![cid].replies,
+						entryToRemove: rid!,
+					}),
 				},
-			};
-		} else {
-			delete _updatedPost.comments;
-		}
+			},
+		};
 
 		_postObj = _updatedPost;
 	}

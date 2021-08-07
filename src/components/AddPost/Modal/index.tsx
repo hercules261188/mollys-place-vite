@@ -1,5 +1,4 @@
 import {
-	MenuItem,
 	Modal,
 	ModalCloseButton,
 	ModalContent,
@@ -7,6 +6,7 @@ import {
 	useDisclosure,
 } from '@chakra-ui/react';
 import React from 'react';
+
 import { Sizes } from '../../../constants';
 import { setSize } from '../../../helpers';
 import { useAddPost } from '../helpers';
@@ -15,43 +15,47 @@ import { ModalFooter } from './Footer';
 import { ModalHeader } from './Header';
 
 interface IComponentProps {
-	type: string;
+	selected: string;
+	toggleSelected: (value: string) => void;
 }
 
-export const AddPostModal: React.FC<IComponentProps> = ({ type }) => {
+export const AddPostModal: React.FC<IComponentProps> = ({
+	selected,
+	toggleSelected,
+}) => {
 	const { isOpen, onClose, onOpen } = useDisclosure();
-	const { toggleImageSubmit, toggleVideoSubmit } = useAddPost();
+	const {
+		handleCancel,
+		toggleImageSubmit,
+		toggleRecipeSubmit,
+		toggleVideoSubmit,
+	} = useAddPost();
 
-	const handleClick = (type: string) => {
-		if (type === `image`) {
+	React.useEffect(() => {
+		if (selected === `image`) {
 			onOpen();
 			toggleImageSubmit();
-		} else if (type === `recipe`) {
-		} else if (type === `text`) {
-		} else if (type === `video`) {
+		} else if (selected === `recipe`) {
+			onOpen();
+			toggleRecipeSubmit();
+		} else if (selected === `text`) {
+			onOpen();
+		} else if (selected === `video`) {
 			onOpen();
 			toggleVideoSubmit();
 		}
-	};
+		toggleSelected(``);
+	}, [selected]);
 
 	return (
-		<>
-			<MenuItem
-				onClick={() => handleClick(type)}
-				textTransform="capitalize"
-			>
-				{`add ${type} post`}
-			</MenuItem>
-
-			<Modal isOpen={isOpen} onClose={onClose}>
-				<ModalOverlay />
-				<ModalContent maxW={setSize(34.764)} mx={setSize(Sizes.gap)}>
-					<ModalHeader />
-					<ModalCloseButton />
-					<ModalBody />
-					<ModalFooter onClose={onClose} />
-				</ModalContent>
-			</Modal>
-		</>
+		<Modal isOpen={isOpen} onClose={onClose}>
+			<ModalOverlay />
+			<ModalContent maxW={setSize(34.764)} mx={setSize(Sizes.gap)}>
+				<ModalHeader />
+				<ModalCloseButton onClick={handleCancel} />
+				<ModalBody />
+				<ModalFooter onClose={onClose} />
+			</ModalContent>
+		</Modal>
 	);
 };

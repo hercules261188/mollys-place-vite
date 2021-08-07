@@ -26,7 +26,7 @@ export const useReply = ({ cid, creator, post, rid }: IUseReply) => {
 
 	const dispatch = useDispatch();
 	const isEditing = useSelector(selectEditingReply);
-	const isReplying = useSelector(selectReplying);
+	const isReplying = useSelector(selectReplying) === cid;
 
 	const { errMsg, updatePost } = usePostMutations();
 
@@ -59,7 +59,8 @@ export const useReply = ({ cid, creator, post, rid }: IUseReply) => {
 		});
 
 		setContent(``);
-		rid && dispatch(toggleEditingReply(``));
+		rid && toggleIsEditing();
+		cid && toggleIsReplying();
 	};
 
 	const toggleIsEditing = () =>

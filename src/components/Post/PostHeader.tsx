@@ -11,7 +11,7 @@ import { MoreMenu } from '../menus/MoreMenu';
 interface IComponentProps {
 	createdAt: IPost['createdAt'];
 	creator: IUser;
-	handleDelete: () => void;
+	handleDelete: (id: string) => void;
 	pid: IPost['id'];
 }
 

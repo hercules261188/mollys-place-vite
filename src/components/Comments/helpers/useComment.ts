@@ -22,15 +22,15 @@ export const useComment = ({ cid, creator, post }: IUseComment) => {
 		useState<IPostComment['content']>(INITIAL_STATE);
 
 	const dispatch = useDispatch();
-	const isEditing = useSelector(selectEditingComment);
-	const isReplying = useSelector(selectReplying);
+	const isEditing = useSelector(selectEditingComment) === cid;
+	const isReplying = useSelector(selectReplying) === cid;
 
 	const { errMsg, updatePost } = usePostMutations();
 
 	const handleChange: React.ChangeEventHandler<HTMLTextAreaElement> = e =>
 		setContent(e.target.value);
 
-	const handleDelete = async () =>
+	const handleDelete = async (cid: string) =>
 		updatePost({
 			cid,
 			post,
@@ -50,7 +50,7 @@ export const useComment = ({ cid, creator, post }: IUseComment) => {
 			content,
 			creator,
 			post,
-			update: !!isEditing,
+			update: isEditing,
 		});
 
 		setContent(``);
@@ -67,6 +67,7 @@ export const useComment = ({ cid, creator, post }: IUseComment) => {
 		handleDelete,
 		handleKeyPress,
 		handleSubmit,
+		isEditing,
 		toggleIsReplying,
 	};
 };

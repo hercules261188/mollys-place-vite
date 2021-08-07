@@ -10,6 +10,7 @@ import { RootState } from './store';
 type SystemSlice = {
 	composing: {
 		image: boolean;
+		recipe: boolean;
 		video: boolean;
 	};
 	editing: {
@@ -23,7 +24,7 @@ type SystemSlice = {
 //
 // Initial state...
 const initialState: SystemSlice = {
-	composing: { image: false, video: false },
+	composing: { image: false, recipe: false, video: false },
 	editing: { comment: ``, post: ``, reply: `` },
 	replying: ``,
 };
@@ -36,6 +37,9 @@ export const systemSlice = createSlice({
 	reducers: {
 		toggleComposingImage: state => {
 			state.composing.image = !state.composing.image;
+		},
+		toggleComposingRecipe: state => {
+			state.composing.recipe = !state.composing.recipe;
 		},
 		toggleComposingVideo: state => {
 			state.composing.video = !state.composing.video;
@@ -57,6 +61,7 @@ export const systemSlice = createSlice({
 
 export const {
 	toggleComposingImage,
+	toggleComposingRecipe,
 	toggleComposingVideo,
 	toggleEditingComment,
 	toggleEditingPost,
@@ -77,6 +82,11 @@ const _selectComposing = createSelector(
 export const selectComposingImage = createSelector(
 	[_selectComposing],
 	composing => composing.image
+);
+
+export const selectComposingRecipe = createSelector(
+	[_selectComposing],
+	composing => composing.recipe
 );
 
 export const selectComposingVideo = createSelector(
