@@ -1,20 +1,45 @@
 import {
+	createAsyncThunk,
 	createSelector,
 	createSlice,
 	current,
 	PayloadAction,
+	SerializedError,
 } from '@reduxjs/toolkit';
 
 import { IPost } from '../models';
+import { retrievePosts } from '../services';
 import { RootState } from './store';
 
 //
 // Types...
-type PostsSlice = IPost[];
+type PostsSlice = {
+	error: SerializedError | null;
+	isEnd: boolean;
+	lastDoc: IPost['createdAt'] | null;
+	list: IPost[];
+	loading: boolean;
+};
 
 //
 // Initial state...
-const initialState: PostsSlice = [];
+const initialState: PostsSlice = {
+	error: null,
+	isEnd: false,
+	lastDoc: null,
+	list: [],
+	loading: false,
+};
+
+//
+// Thunk actions...
+const setPosts = createAsyncThunk(
+	'posts/setPosts',
+	async (lastDoc: PostsSlice['lastDoc']) => {
+		const response = await retrievePosts(lastDoc);
+		return response;
+	}
+);
 
 //
 // Reducer...
@@ -23,33 +48,52 @@ export const postsSlice = createSlice({
 	name: `posts`,
 	reducers: {
 		addPost: (state, action: PayloadAction<IPost>) => {
-			state =
-				current(state).length === 0
+			state.list =
+				current(state.list).length === 0
 					? [action.payload]
-					: [action.payload, ...state];
+					: [action.payload, ...state.list];
 
 			return state;
 		},
 		removePost: (state, action: PayloadAction<IPost['id']>) => {
-			state = state.filter((post: IPost) => post.id !== action.payload);
+			state.list = state.list.filter(
+				(post: IPost) => post.id !== action.payload
+			);
 
 			return state;
 		},
-		setPosts: (state, action: PayloadAction<PostsSlice>) => {
-			return current(state).length === 0
-				? action.payload
-				: [...action.payload, ...state];
-		},
 		updatePost: (state, action: PayloadAction<IPost>) => {
-			return state.map((post: IPost) =>
+			state.list = state.list.map((post: IPost) =>
 				post.id === action.payload.id ? action.payload : post
 			);
+
+			return state;
 		},
+	},
+	extraReducers: builder => {
+		builder.addCase(setPosts.pending, state => {
+			if (!state.loading) state.loading = true;
+		});
+		builder.addCase(setPosts.fulfilled, (state, action) => {
+			if (state.loading) state.loading = false;
+			if (action.payload.success) {
+				const { success } = action.payload;
+				state.list.push(...success.posts);
+				state.lastDoc = success.lastDoc;
+				if (success.isEnd) {
+					state.isEnd = true;
+				}
+			}
+		});
+		builder.addCase(setPosts.rejected, (state, action) => {
+			if (state.loading) state.loading = false;
+			state.error = action.error;
+		});
 	},
 });
 
-export const { addPost, removePost, setPosts, updatePost } =
-	postsSlice.actions;
+export const { addPost, removePost, updatePost } = postsSlice.actions;
+export { setPosts };
 export const postsReducer = postsSlice.reducer;
 
 //
@@ -64,5 +108,5 @@ export const selectPosts = createSelector(
 export const selectPostById = (pid: IPost['id']) =>
 	createSelector(
 		[_selectPostsSlice],
-		posts => posts.filter(post => post.id === pid)[0]
+		posts => posts.list.filter(post => post.id === pid)[0]
 	);
