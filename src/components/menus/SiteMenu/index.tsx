@@ -1,5 +1,4 @@
 import {
-	Button,
 	Drawer,
 	DrawerBody,
 	DrawerCloseButton,
@@ -19,9 +18,10 @@ import { FiMenu } from 'react-icons/fi';
 import { Colors, Sizes, Strings } from '../../../constants';
 import { setSize } from '../../../helpers';
 
+import { IMenuItem, menuItems } from './item.data';
+
 import { Footer } from '../../Footer';
-import { IMenuItem } from '../types';
-import { menuItems } from './item.data';
+import { MenuButton } from './MenuButton';
 
 interface IComponentProps {
 	isLargeScreen: boolean;
@@ -35,6 +35,11 @@ export const SiteMenu: React.FC<IComponentProps> = ({ isLargeScreen }) => {
 		site: { initials },
 	} = Strings;
 
+	const _buildMenu = () =>
+		(menuItems as IMenuItem[]).map(item => (
+			<MenuButton key={item.id} {...item} />
+		));
+
 	return isLargeScreen ? (
 		<Flex
 			as="section"
@@ -46,7 +51,7 @@ export const SiteMenu: React.FC<IComponentProps> = ({ isLargeScreen }) => {
 			top={setSize(4.032)}
 		>
 			<Flex flexDirection="column" h="full">
-				{menuItems.map(item => _buildMenuButton(item))}
+				{_buildMenu()}
 			</Flex>
 		</Flex>
 	) : (
@@ -92,9 +97,7 @@ export const SiteMenu: React.FC<IComponentProps> = ({ isLargeScreen }) => {
 						</Flex>
 					</DrawerHeader>
 
-					<DrawerBody>
-						{menuItems.map(item => _buildMenuButton(item))}
-					</DrawerBody>
+					<DrawerBody>{_buildMenu()}</DrawerBody>
 
 					<DrawerFooter
 						justifyContent="center"
@@ -107,21 +110,3 @@ export const SiteMenu: React.FC<IComponentProps> = ({ isLargeScreen }) => {
 		</Flex>
 	);
 };
-
-const _buildMenuButton = ({ icon, id, label, path }: IMenuItem) => (
-	<Button
-		alignItems="center"
-		h={setSize(2.222)}
-		justifyContent="flex-start"
-		key={id}
-		leftIcon={<Icon as={icon} mr={`${Sizes.gap / 2}rem`} />}
-		mb={`${Sizes.gap / 2}rem`}
-		onClick={() => console.log(path)}
-		variant="ghost"
-		w="100%"
-	>
-		<Text fontWeight="light" letterSpacing="wide">
-			{label}
-		</Text>
-	</Button>
-);

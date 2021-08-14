@@ -8,15 +8,15 @@ import {
 } from '@reduxjs/toolkit';
 
 import { IPost } from '../models';
-import { retrievePosts } from '../services';
+import { IRetrievePosts, retrievePosts } from '../services';
 import { RootState } from './store';
 
 //
 // Types...
 type PostsSlice = {
+	cursor: number | null;
 	error: SerializedError | null;
 	isEnd: boolean;
-	lastDoc: IPost['createdAt'] | null;
 	list: IPost[];
 	loading: boolean;
 };
@@ -24,9 +24,9 @@ type PostsSlice = {
 //
 // Initial state...
 const initialState: PostsSlice = {
+	cursor: null,
 	error: null,
 	isEnd: false,
-	lastDoc: null,
 	list: [],
 	loading: false,
 };
@@ -35,8 +35,8 @@ const initialState: PostsSlice = {
 // Thunk actions...
 const setPosts = createAsyncThunk(
 	'posts/setPosts',
-	async (lastDoc: PostsSlice['lastDoc']) => {
-		const response = await retrievePosts(lastDoc);
+	async ({ cursor, filter, isAuthed }: IRetrievePosts) => {
+		const response = await retrievePosts({ cursor, filter, isAuthed });
 		return response;
 	}
 );
@@ -62,6 +62,11 @@ export const postsSlice = createSlice({
 
 			return state;
 		},
+		resetPosts: state => {
+			state = initialState;
+
+			return state;
+		},
 		updatePost: (state, action: PayloadAction<IPost>) => {
 			state.list = state.list.map((post: IPost) =>
 				post.id === action.payload.id ? action.payload : post
@@ -79,7 +84,7 @@ export const postsSlice = createSlice({
 			if (action.payload.success) {
 				const { success } = action.payload;
 				state.list.push(...success.posts);
-				state.lastDoc = success.lastDoc;
+				state.cursor = success.cursor;
 				if (success.isEnd) {
 					state.isEnd = true;
 				}
@@ -92,7 +97,8 @@ export const postsSlice = createSlice({
 	},
 });
 
-export const { addPost, removePost, updatePost } = postsSlice.actions;
+export const { addPost, removePost, resetPosts, updatePost } =
+	postsSlice.actions;
 export { setPosts };
 export const postsReducer = postsSlice.reducer;
 

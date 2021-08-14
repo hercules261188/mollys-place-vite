@@ -1,28 +1,33 @@
 import { Flex } from '@chakra-ui/react';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { PostFilters } from '../models';
 
-import { selectPosts, setPosts } from '../state/posts';
+import { useAuth } from '../services';
+import { resetPosts, selectPosts, setPosts } from '../state/posts';
 
 import { Post } from './Post';
 import { Text } from './Text';
 
-interface IComponentProps {}
+interface IComponentProps {
+	filter: PostFilters | null;
+}
 
-export const Feed: React.FC<IComponentProps> = () => {
+export const Feed: React.FC<IComponentProps> = ({ filter }) => {
+	const [currentFilter, setCurrentFilter] =
+		React.useState<PostFilters | null>(null);
 	const [nearBottom, setNearBottom] = React.useState(true);
-
 	const feedRef = React.useRef<HTMLDivElement | null>(null);
 
+	const { currentUser } = useAuth();
+
 	const dispatch = useDispatch();
-	const { error, isEnd, lastDoc, list, loading } =
-		useSelector(selectPosts);
+	const { cursor, error, isEnd, list, loading } = useSelector(selectPosts);
 
 	const getPosts = () => {
-		dispatch(setPosts(lastDoc));
-
-		handleScroll();
-		console.log(lastDoc);
+		dispatch(
+			setPosts({ cursor, filter: currentFilter, isAuthed: !!currentUser })
+		);
 	};
 
 	const handleScroll = () => {
@@ -37,17 +42,34 @@ export const Feed: React.FC<IComponentProps> = () => {
 		}
 	};
 
+	const resetFeed = () => {
+		dispatch(resetPosts());
+		setNearBottom(true);
+		setCurrentFilter(filter);
+	};
+
+	// Setup and teardown of scroll event listener...
 	React.useEffect(() => {
 		window.addEventListener('scroll', handleScroll);
 		return () => window.removeEventListener('scroll', handleScroll);
 	}, []);
 
+	// Initial load...
 	React.useEffect(() => {
-		if (!isEnd && nearBottom) {
-			console.log(`Loading more...`);
+		getPosts();
+	}, [currentFilter]);
+
+	// Filter changed...
+	React.useEffect(() => {
+		if (filter !== currentFilter) {
+			resetFeed();
+		}
+	}, [filter]);
+
+	// Load more...
+	React.useEffect(() => {
+		if (cursor && !isEnd && !loading && nearBottom) {
 			getPosts();
-		} else if (isEnd) {
-			console.log(`End of Posts.`);
 		}
 	}, [nearBottom]);
 

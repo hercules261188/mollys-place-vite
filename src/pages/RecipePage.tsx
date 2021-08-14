@@ -16,7 +16,7 @@ import { PostFilters } from '../models';
 
 interface IComponentProps {}
 
-export const HomePage: React.FC<IComponentProps> = () => {
+export const RecipePage: React.FC<IComponentProps> = () => {
 	const [isLargeScreen] = useMediaQuery(
 		`(min-width: ${Sizes.breakPoint}px)`
 	);
@@ -36,7 +36,7 @@ export const HomePage: React.FC<IComponentProps> = () => {
 				pl={isLargeScreen ? setSize(Sizes.gap) : 0}
 			>
 				<BannerImage {...featuredImage} overlay={Overlay.light} />
-				<Feed filter={PostFilters.GENERAL} />
+				<Feed filter={PostFilters.RECIPE} />
 			</Flex>
 			<AddPostButton />
 		</Layout>

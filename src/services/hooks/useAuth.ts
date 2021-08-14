@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 
 import { IUserCredentials } from '../../models';
 import { selectCurrentUser, setCurrentUser } from '../../state/user';
@@ -10,7 +9,6 @@ import { retrieveUser } from '../database';
 export const useAuth = () => {
 	const currentUser = useSelector(selectCurrentUser);
 	const dispatch = useDispatch();
-	const history = useHistory();
 	const [errMsg, setErrMsg] = useState('');
 
 	useEffect(() => {
@@ -22,7 +20,6 @@ export const useAuth = () => {
 					setErrMsg(response.failure);
 				} else {
 					dispatch(setCurrentUser(response.success));
-					history.replace('/');
 				}
 			} else {
 				dispatch(setCurrentUser(null));

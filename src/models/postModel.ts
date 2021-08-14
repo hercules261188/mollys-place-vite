@@ -66,3 +66,13 @@ export interface IPost {
 	id?: string;
 	updatedAt?: number;
 }
+
+export enum PostFilters {
+	GAMING = `filters.gaming`,
+	GENERAL = `filters.general`,
+	KIDS = `filters.kids`,
+	RECIPE = `filters.recipe`,
+
+	PUBLIC = `filters.public`,
+	USER = `filters.user`,
+}
