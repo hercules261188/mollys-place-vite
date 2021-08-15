@@ -12,14 +12,17 @@ interface AssemblePostObject {
 		| IPostComment['content']
 		| IPostReply['content'];
 	creator?: IUser;
+	filters?: IPost['filters'];
 }
 
 export const assemblePostObject = ({
 	content,
 	creator,
+	filters,
 }: AssemblePostObject) =>
 	({
 		content,
 		createdAt: Date.now(),
 		creator: _assembleCreatorObject(creator!),
+		filters,
 	} as IPost);

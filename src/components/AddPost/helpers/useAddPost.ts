@@ -4,17 +4,15 @@ import {
 	useEffect,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { IPost, IUser } from '../../../models';
+import { IPost, IUser, PostFilterTypes } from '../../../models';
 
 import { retrieveVideoInfo, usePostMutations } from '../../../services';
 import {
-	selectPostBackground,
-	selectPostContent,
-	selectPostErrMsg,
-	selectPostSubmission,
+	selectPost,
 	setPostBackground,
 	setPostContent,
 	setPostErrMsg,
+	setPostFilter,
 	setPostSubmission,
 } from '../../../state/editor';
 import {
@@ -25,22 +23,19 @@ import {
 	toggleComposingImage,
 	toggleComposingRecipe,
 	toggleComposingVideo,
-	toggleEditingPost,
 } from '../../../state/system';
-import { selectCurrentUser } from '../../../state/user';
+import { selectUser } from '../../../state/user';
 import { processImage } from './utilities';
 
 export const useAddPost = () => {
 	const dispatch = useDispatch();
-	const background = useSelector(selectPostBackground);
-	const content = useSelector(selectPostContent);
-	const currentUser = useSelector(selectCurrentUser);
-	const errMsg = useSelector(selectPostErrMsg);
+	const { background, content, errMsg, filters, submission } =
+		useSelector(selectPost);
+	const { current: currentUser } = useSelector(selectUser);
 	const isComposingImage = useSelector(selectComposingImage);
 	const isComposingRecipe = useSelector(selectComposingRecipe);
 	const isComposingVideo = useSelector(selectComposingVideo);
 	const isEditingPost = useSelector(selectEditingPost);
-	const submission = useSelector(selectPostSubmission);
 
 	const { createPost, errMsg: errorMsg } = usePostMutations();
 
@@ -64,6 +59,15 @@ export const useAddPost = () => {
 	const handleContentChange = (newContent: IPost['content']) =>
 		dispatch(setPostContent(newContent));
 
+	const handleFilterSelect: ChangeEventHandler<HTMLSelectElement> = e => {
+		const filterKey =
+			PostFilterTypes[
+				e.target.value.toUpperCase() as keyof typeof PostFilterTypes
+			];
+		const newFilter = filterKey;
+		dispatch(setPostFilter(newFilter));
+	};
+
 	const handleKeyPress: KeyboardEventHandler<HTMLInputElement> = e => {
 		if (e.key === 'Enter') {
 			e.preventDefault();
@@ -76,6 +80,7 @@ export const useAddPost = () => {
 			background,
 			content,
 			creator: currentUser as IUser,
+			filters,
 		});
 		_editorReset();
 	};
@@ -127,6 +132,7 @@ export const useAddPost = () => {
 		handleBgChange,
 		handleCancel,
 		handleContentChange,
+		handleFilterSelect,
 		handleKeyPress,
 		handleSubmission,
 		handleSubmit,

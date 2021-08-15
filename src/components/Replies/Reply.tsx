@@ -10,7 +10,7 @@ import { Colors, Sizes } from '../../constants';
 import { AvatarDisplay } from '../displays';
 import { MoreMenu } from '../menus/MoreMenu';
 import { ReplyEditor } from './ReplyEditor';
-import { selectCurrentUser } from '../../state/user';
+import { selectUser } from '../../state/user';
 import { useReply } from './helpers';
 
 interface IComponentProps {
@@ -20,10 +20,10 @@ interface IComponentProps {
 }
 
 export const Reply: React.FC<IComponentProps> = ({ cid, reply, post }) => {
-	const currentUser = useSelector(selectCurrentUser) as IUser;
+	const { current: currentUser } = useSelector(selectUser);
 	const { handleDelete, isEditing, toggleIsReplying } = useReply({
 		cid,
-		creator: currentUser,
+		creator: currentUser!,
 		post,
 		rid: reply.id,
 	});

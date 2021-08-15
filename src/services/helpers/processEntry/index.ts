@@ -13,6 +13,7 @@ export interface IProcessEntryProps {
 		| IPostComment['content']
 		| IPostReply['content'];
 	creator?: IUser;
+	filters?: IPost['filters'];
 	post?: IPost;
 	rid?: IPostReply['id'];
 	update?: boolean;
@@ -23,6 +24,7 @@ export const processEntry = ({
 	cid,
 	content,
 	creator,
+	filters,
 	post,
 	rid,
 	update,
@@ -31,7 +33,7 @@ export const processEntry = ({
 
 	if (!post && content) {
 		console.log(`Creating new post...`);
-		const _newPost = assemblePostObject({ content, creator });
+		const _newPost = assemblePostObject({ content, creator, filters });
 		if (background) _newPost.background = background;
 
 		_postObj = _newPost;
@@ -57,7 +59,7 @@ export const processEntry = ({
 						[uuid()]: assemblePostObject({
 							content: _updatedContent,
 							creator,
-						}) as IPostComment,
+						}) as unknown as IPostComment,
 					},
 			  }
 			: {
@@ -66,7 +68,7 @@ export const processEntry = ({
 						[uuid()]: assemblePostObject({
 							content: _updatedContent,
 							creator,
-						}) as IPostComment,
+						}) as unknown as IPostComment,
 					},
 			  };
 
@@ -114,7 +116,7 @@ export const processEntry = ({
 								[uuid()]: assemblePostObject({
 									content: _updatedContent,
 									creator,
-								}) as IPostReply,
+								}) as unknown as IPostReply,
 							},
 					  }
 					: {
@@ -123,7 +125,7 @@ export const processEntry = ({
 								[uuid()]: assemblePostObject({
 									content: _updatedContent,
 									creator,
-								}) as IPostReply,
+								}) as unknown as IPostReply,
 							},
 					  },
 			},

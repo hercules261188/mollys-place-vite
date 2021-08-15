@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 
 import { setSize } from '../../helpers';
 import { IPost } from '../../models';
-import { selectCurrentUser } from '../../state/user';
+import { selectUser } from '../../state/user';
 import { Colors, Sizes } from '../../constants';
 import { Comments } from '../Comments';
 
@@ -13,7 +13,7 @@ interface IComponentProps {
 }
 
 export const PostFooter: React.FC<IComponentProps> = ({ post }) => {
-	const currentUser = useSelector(selectCurrentUser);
+	const { current: currentUser } = useSelector(selectUser);
 
 	return (
 		<Flex

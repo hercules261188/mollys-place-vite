@@ -13,23 +13,24 @@ import {
 import React from 'react';
 import { FaMoon, FaSun } from 'react-icons/fa';
 import { FiLogIn, FiLogOut } from 'react-icons/fi';
+import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { Colors, Sizes } from '../../constants';
 import { setSize } from '../../helpers';
-import { useAuth } from '../../services';
+import { selectUser } from '../../state/user';
 import { ColorModeSwitcher } from '../ColorModeSwitcher';
 
-interface IComponentProps {}
+interface IComponentProps {
+	signOut: () => Promise<void>;
+}
 
-export const UserMenu: React.FC<IComponentProps> = () => {
+export const UserMenu: React.FC<IComponentProps> = ({ signOut }) => {
 	const switchText = useColorModeValue('dark', 'light');
 	const SwitchIcon = useColorModeValue(FaMoon, FaSun);
 	const { toggleColorMode } = useColorMode();
 
-	const { currentUser, errMsg, signOut } = useAuth();
-	errMsg && console.error(errMsg);
-
+	const { current: currentUser } = useSelector(selectUser);
 	const history = useHistory();
 
 	const handleLogIn = () => history.push('/signin');

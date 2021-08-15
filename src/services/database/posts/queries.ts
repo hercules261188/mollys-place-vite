@@ -2,12 +2,12 @@ import firebase from 'firebase';
 
 import { db } from '../init';
 
-import { IPost, PostFilters } from '../../../models';
+import { IPost, PostFilterTypes } from '../../../models';
 
 export interface IPostsResponse {
 	failure?: string;
 	success?: {
-		cursor: number;
+		cursor: number | null;
 		isEnd: boolean;
 		posts: IPost[];
 	};
@@ -17,7 +17,7 @@ const collectionRef = db.collection('posts');
 
 export interface IRetrievePosts {
 	cursor: number | null;
-	filter: PostFilters | null;
+	filter: PostFilterTypes | null;
 	isAuthed: boolean;
 }
 
@@ -31,23 +31,26 @@ export const retrievePosts = async ({
 	const response = {} as IPostsResponse;
 	const posts: IPost[] = [];
 
-	isAuthed = true;
 	console.log(`isAuthed: ${isAuthed}`);
 	console.log(`Filter: ${filter}`);
 
-	const authFilter = isAuthed ? PostFilters.USER : PostFilters.PUBLIC;
+	const authFilter = isAuthed
+		? `filters.${PostFilterTypes.USER}`
+		: `filters.${PostFilterTypes.PUBLIC}`;
+
+	const catFilter = `filters.${filter}`;
 
 	// Construct query...
 	let query: firebase.firestore.Query<firebase.firestore.DocumentData>;
 	if (cursor) {
 		console.log(`Cursor: ${cursor}`);
 		query = collectionRef.where(authFilter, `==`, true);
-		query = filter ? query.where(filter, `==`, true) : query;
+		query = filter ? query.where(catFilter, `==`, true) : query;
 		query = query.orderBy('createdAt', 'desc');
 		query = query.startAfter(cursor);
 	} else {
 		query = collectionRef.where(authFilter, `==`, true);
-		query = filter ? query.where(filter, `==`, true) : query;
+		query = filter ? query.where(catFilter, `==`, true) : query;
 		query = query.orderBy('createdAt', 'desc');
 	}
 
@@ -59,14 +62,14 @@ export const retrievePosts = async ({
 		console.log(`Returned: ${snapshot.docs.length}`);
 
 		isEnd = snapshot.docs.length < numberToRetrieve;
-		const cursor = snapshot.docs[snapshot.docs.length - 1].data()
-			.createdAt as IPost['createdAt'];
+		const cursor = isEnd
+			? null
+			: (snapshot.docs[snapshot.docs.length - 1].data()
+					.createdAt as IPost['createdAt']);
 
 		snapshot.forEach(doc =>
 			posts.push({ id: doc.id, ...doc.data() } as IPost)
 		);
-
-		posts.sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1));
 
 		response.success = { cursor, isEnd, posts };
 	} catch (error) {

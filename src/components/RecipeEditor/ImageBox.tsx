@@ -4,8 +4,9 @@ import { FiPlusCircle } from 'react-icons/fi';
 
 import { Colors, Sizes } from '../../constants';
 import { setSize } from '../../helpers';
-import { IPost, IPostRecipe } from '../../models';
+import { IPostRecipe } from '../../models';
 import { useAddPost } from '../AddPost/helpers';
+
 import { Text } from '../Text';
 
 interface IComponentProps {
@@ -18,8 +19,11 @@ export const ImageBox: React.FC<IComponentProps> = ({
 	preview,
 }) => {
 	const { processImage } = useAddPost();
+
 	const [errMsg, setErrMsg] = React.useState(``);
 	const [image, setImage] = React.useState<File | null>(null);
+
+	console.log(`RecipeEditor.ImageBox.errMsg: ${errMsg}`);
 
 	const imageInputRef = React.useRef<HTMLInputElement>(null);
 

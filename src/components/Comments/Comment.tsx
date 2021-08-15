@@ -3,12 +3,11 @@ import moment from 'moment';
 import React from 'react';
 
 import { useSelector } from 'react-redux';
-import { selectCurrentUser } from '../../state/user';
+import { selectUser } from '../../state/user';
 
 import { setSize } from '../../helpers';
 import { IPost, IPostComment } from '../../models';
 import { Colors, Sizes } from '../../constants';
-
 import { useComment } from './helpers';
 
 import { AvatarDisplay } from '../displays';
@@ -28,7 +27,7 @@ export const Comment: React.FC<IComponentProps> = ({ comment, post }) => {
 		post,
 	});
 
-	const currentUser = useSelector(selectCurrentUser);
+	const { current: currentUser } = useSelector(selectUser);
 
 	const bgColor = useColorModeValue(
 		Colors.light.surfaceColor,

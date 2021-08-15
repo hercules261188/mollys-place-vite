@@ -8,11 +8,10 @@ import {
 	AddPostButton,
 	BannerImage,
 	Feed,
-	Layout,
 	Overlay,
 	SiteMenu,
 } from '../components';
-import { PostFilters } from '../models';
+import { PostFilterTypes } from '../models';
 
 interface IComponentProps {}
 
@@ -24,7 +23,7 @@ export const RecipePage: React.FC<IComponentProps> = () => {
 	const { featuredImage } = Strings;
 
 	return (
-		<Layout>
+		<>
 			{isLargeScreen && <SiteMenu isLargeScreen />}
 			<Flex
 				alignItems="center"
@@ -36,9 +35,9 @@ export const RecipePage: React.FC<IComponentProps> = () => {
 				pl={isLargeScreen ? setSize(Sizes.gap) : 0}
 			>
 				<BannerImage {...featuredImage} overlay={Overlay.light} />
-				<Feed filter={PostFilters.RECIPE} />
+				<Feed filter={PostFilterTypes.RECIPE} />
 			</Flex>
 			<AddPostButton />
-		</Layout>
+		</>
 	);
 };

@@ -57,22 +57,27 @@ export type PostComments = {
 	[id: string]: IPostComment;
 };
 
+export enum PostFilterTypes {
+	GAMING = `gaming`,
+	GENERAL = `general`,
+	KIDS = `kids`,
+	RECIPE = `recipe`,
+
+	PUBLIC = `public`,
+	USER = `user`,
+}
+
+interface IPostFilters {
+	[x: string]: boolean;
+}
+
 export interface IPost {
 	background?: string;
 	comments?: PostComments;
 	content: IPostContent;
 	createdAt: number;
 	creator: IUser;
+	filters: IPostFilters;
 	id?: string;
 	updatedAt?: number;
-}
-
-export enum PostFilters {
-	GAMING = `filters.gaming`,
-	GENERAL = `filters.general`,
-	KIDS = `filters.kids`,
-	RECIPE = `filters.recipe`,
-
-	PUBLIC = `filters.public`,
-	USER = `filters.user`,
 }

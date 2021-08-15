@@ -1,9 +1,7 @@
 import { Flex } from '@chakra-ui/react';
 import React from 'react';
-import { useSelector } from 'react-redux';
 
 import { IPost, IPostComment, IUser } from '../../models';
-import { selectCurrentUser } from '../../state/user';
 
 import { AvatarDisplay } from '../displays';
 import { useReply } from './helpers';

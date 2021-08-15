@@ -3,32 +3,24 @@ import React from 'react';
 
 import { Colors, Sizes } from '../../constants';
 import { setSize } from '../../helpers';
-import { IPost, IPostImageDimensions, IPostRecipe } from '../../models';
+import { IPost, IPostRecipe } from '../../models';
 import { useAddPost } from '../AddPost/helpers';
 import { usePost } from '../Post/helpers';
-import { Text } from '../Text';
 
+import { Text } from '../Text';
 import { DescriptionBox } from './DescriptionBox';
 import { DirectionsBox } from './DirectionsBox';
 import { ImageBox } from './ImageBox';
 import { IngredientsBox } from './IngredientsBox';
 
 interface IComponentProps {
-	post: IPost;
-}
-
-interface IRecipeChangeProps {
-	[x: string]: string | string[] | IPostRecipe['image'];
+	post?: IPost;
 }
 
 export const RecipeEditor: React.FC<IComponentProps> = ({ post }) => {
-	const {
-		content,
-		errMsg,
-		handleCancel,
-		handleContentChange,
-		handleSubmit,
-	} = post ? usePost(post) : useAddPost();
+	const { content, handleContentChange } = post
+		? usePost(post)
+		: useAddPost();
 
 	const initialState: IPostRecipe = {
 		description: ``,

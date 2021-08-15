@@ -1,9 +1,11 @@
+import { SerializedError } from '@reduxjs/toolkit';
+
 import { db } from '../init';
 
 import { IUser } from '../../../models';
 
 export interface IUsersResponse {
-	failure?: string;
+	failure: SerializedError | null;
 	success: IUser | null;
 }
 
@@ -21,7 +23,7 @@ export const retrieveUser = async ({ id }: { id: string }) => {
 			...user.data(),
 		} as IUser;
 	} catch (error) {
-		response.failure = error.message;
+		response.failure = error;
 	}
 
 	return response;

@@ -10,6 +10,7 @@ import React from 'react';
 import { Sizes } from '../../../constants';
 import { setSize } from '../../../helpers';
 import { useAddPost } from '../helpers';
+
 import { ModalBody } from './Body';
 import { ModalFooter } from './Footer';
 import { ModalHeader } from './Header';

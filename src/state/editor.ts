@@ -1,9 +1,10 @@
 import {
 	createSelector,
 	createSlice,
+	current,
 	PayloadAction,
 } from '@reduxjs/toolkit';
-import { IPost } from '../models';
+import { IPost, PostFilterTypes } from '../models';
 import { RootState } from './store';
 
 //
@@ -13,6 +14,7 @@ type EditorSlice = {
 		background: string | undefined;
 		content?: IPost['content'];
 		errMsg: string;
+		filters: IPost['filters'];
 		submission: string;
 	};
 };
@@ -24,6 +26,10 @@ const initialState: EditorSlice = {
 		background: undefined,
 		content: undefined,
 		errMsg: ``,
+		filters: {
+			[PostFilterTypes.PUBLIC]: true,
+			[PostFilterTypes.GENERAL]: true,
+		},
 		submission: ``,
 	},
 };
@@ -55,6 +61,44 @@ export const editorSlice = createSlice({
 		setPostErrMsg: (state, action: PayloadAction<string>) => {
 			state.post.errMsg = action.payload;
 		},
+		setPostFilter: (state, action: PayloadAction<PostFilterTypes>) => {
+			// Set section defaults...
+			if (action.payload === PostFilterTypes.GAMING) {
+				if (!state.post.filters.public) state.post.filters.public = true;
+				if (!state.post.filters.user) state.post.filters.user = true;
+				if (state.post.filters.kids) delete state.post.filters.kids;
+				if (state.post.filters.recipe) delete state.post.filters.recipe;
+			}
+			if (action.payload === PostFilterTypes.GENERAL) {
+				if (!state.post.filters.public) state.post.filters.public = true;
+				if (!state.post.filters.user) state.post.filters.user = true;
+				if (state.post.filters.gaming) delete state.post.filters.gaming;
+				if (state.post.filters.kids) delete state.post.filters.kids;
+				if (state.post.filters.recipe) delete state.post.filters.recipe;
+			}
+			if (action.payload === PostFilterTypes.KIDS) {
+				if (state.post.filters.public) delete state.post.filters.public;
+				if (!state.post.filters.user) state.post.filters.user = true;
+				if (state.post.filters.gaming) delete state.post.filters.gaming;
+				if (state.post.filters.recipe) delete state.post.filters.recipe;
+			}
+			if (action.payload === PostFilterTypes.RECIPE) {
+				if (!state.post.filters.public) state.post.filters.public = true;
+				if (!state.post.filters.user) state.post.filters.user = true;
+				if (state.post.filters.kids) delete state.post.filters.kids;
+				if (state.post.filters.gaming) delete state.post.filters.gaming;
+			}
+
+			// Adjust security levels...
+			if (action.payload === PostFilterTypes.USER) {
+				if (state.post.filters.public) delete state.post.filters.public;
+			}
+
+			state.post.filters = {
+				...state.post.filters,
+				[action.payload]: true,
+			};
+		},
 		setPostSubmission: (state, action: PayloadAction<string>) => {
 			state.post.submission = action.payload;
 		},
@@ -65,6 +109,7 @@ export const {
 	setPostBackground,
 	setPostContent,
 	setPostErrMsg,
+	setPostFilter,
 	setPostSubmission,
 } = editorSlice.actions;
 export const editorReducer = editorSlice.reducer;
@@ -73,27 +118,7 @@ export const editorReducer = editorSlice.reducer;
 // Selectors...
 const _selectEditorSlice = (state: RootState) => state.editor;
 
-const _selectPost = createSelector(
+export const selectPost = createSelector(
 	[_selectEditorSlice],
 	editor => editor.post
-);
-
-export const selectPostBackground = createSelector(
-	[_selectPost],
-	post => post.background
-);
-
-export const selectPostContent = createSelector(
-	[_selectPost],
-	post => post.content
-);
-
-export const selectPostErrMsg = createSelector(
-	[_selectPost],
-	post => post.errMsg
-);
-
-export const selectPostSubmission = createSelector(
-	[_selectPost],
-	post => post.submission
 );

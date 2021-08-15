@@ -5,14 +5,12 @@ import {
 	MenuButton,
 	MenuItem,
 	MenuList,
-	useDisclosure,
 } from '@chakra-ui/react';
 import React from 'react';
 import { FiPlus } from 'react-icons/fi';
 
 import { Colors, Sizes } from '../../constants';
 import { setSize } from '../../helpers';
-import { useAddPost } from './helpers';
 
 import { AddPostModal } from './Modal';
 

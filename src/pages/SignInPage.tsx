@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 
-import { BannerImage, Layout, Overlay } from '../components';
+import { BannerImage, Overlay } from '../components';
 import { Sizes, Strings } from '../constants';
 import { setSize } from '../helpers';
 
@@ -47,7 +47,7 @@ export const SignInPage: React.FC<IComponentProps> = () => {
 	};
 
 	return (
-		<Layout>
+		<>
 			<Flex flex={1} justifyContent="center" mx={setSize(Sizes.gap)}>
 				<Flex
 					alignItems="center"
@@ -107,6 +107,6 @@ export const SignInPage: React.FC<IComponentProps> = () => {
 					</Flex>
 				</Flex>
 			</Flex>
-		</Layout>
+		</>
 	);
 };

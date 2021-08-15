@@ -4,8 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { IPost } from '../../../models';
 import { usePostMutations } from '../../../services';
 import {
-	selectPostBackground,
-	selectPostContent,
+	selectPost,
 	setPostBackground,
 	setPostContent,
 } from '../../../state/editor';
@@ -17,8 +16,7 @@ import {
 export const usePost = (post?: IPost) => {
 	const { deletePost, errMsg, updatePost } = usePostMutations();
 
-	const background = useSelector(selectPostBackground);
-	const content = useSelector(selectPostContent);
+	const { background, content } = useSelector(selectPost);
 	const isEditingPost = useSelector(selectEditingPost);
 	const dispatch = useDispatch();
 

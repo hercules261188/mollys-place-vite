@@ -36,6 +36,8 @@ const initialState: PostsSlice = {
 const setPosts = createAsyncThunk(
 	'posts/setPosts',
 	async ({ cursor, filter, isAuthed }: IRetrievePosts) => {
+		console.log(cursor);
+
 		const response = await retrievePosts({ cursor, filter, isAuthed });
 		return response;
 	}

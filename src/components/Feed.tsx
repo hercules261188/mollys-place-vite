@@ -1,33 +1,30 @@
 import { Flex } from '@chakra-ui/react';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { PostFilters } from '../models';
+import { PostFilterTypes } from '../models';
 
-import { useAuth } from '../services';
 import { resetPosts, selectPosts, setPosts } from '../state/posts';
+import { selectUser } from '../state/user';
 
 import { Post } from './Post';
 import { Text } from './Text';
 
 interface IComponentProps {
-	filter: PostFilters | null;
+	filter: PostFilterTypes;
 }
 
 export const Feed: React.FC<IComponentProps> = ({ filter }) => {
-	const [currentFilter, setCurrentFilter] =
-		React.useState<PostFilters | null>(null);
 	const [nearBottom, setNearBottom] = React.useState(true);
+
 	const feedRef = React.useRef<HTMLDivElement | null>(null);
 
-	const { currentUser } = useAuth();
+	const { current: currentUser } = useSelector(selectUser);
 
 	const dispatch = useDispatch();
 	const { cursor, error, isEnd, list, loading } = useSelector(selectPosts);
 
 	const getPosts = () => {
-		dispatch(
-			setPosts({ cursor, filter: currentFilter, isAuthed: !!currentUser })
-		);
+		dispatch(setPosts({ cursor, filter, isAuthed: !!currentUser }));
 	};
 
 	const handleScroll = () => {
@@ -42,12 +39,6 @@ export const Feed: React.FC<IComponentProps> = ({ filter }) => {
 		}
 	};
 
-	const resetFeed = () => {
-		dispatch(resetPosts());
-		setNearBottom(true);
-		setCurrentFilter(filter);
-	};
-
 	// Setup and teardown of scroll event listener...
 	React.useEffect(() => {
 		window.addEventListener('scroll', handleScroll);
@@ -57,18 +48,15 @@ export const Feed: React.FC<IComponentProps> = ({ filter }) => {
 	// Initial load...
 	React.useEffect(() => {
 		getPosts();
-	}, [currentFilter]);
-
-	// Filter changed...
-	React.useEffect(() => {
-		if (filter !== currentFilter) {
-			resetFeed();
-		}
-	}, [filter]);
+		return () => {
+			dispatch(resetPosts());
+		};
+	}, []);
 
 	// Load more...
 	React.useEffect(() => {
 		if (cursor && !isEnd && !loading && nearBottom) {
+			console.log(`Load more...`);
 			getPosts();
 		}
 	}, [nearBottom]);

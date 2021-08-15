@@ -19,8 +19,9 @@ export const usePostMutations = () => {
 		background,
 		content,
 		creator,
+		filters,
 	}: IProcessEntryProps) => {
-		const post = processEntry({ background, content, creator });
+		const post = processEntry({ background, content, creator, filters });
 
 		const response = await mCreatePost(post);
 
