@@ -7,7 +7,7 @@ import {
 	SerializedError,
 } from '@reduxjs/toolkit';
 
-import { IPost } from '../models';
+import { IPost, PostFilterTypes } from '../models';
 import { IRetrievePosts, retrievePosts } from '../services';
 import { RootState } from './store';
 
@@ -19,6 +19,7 @@ type PostsSlice = {
 	isEnd: boolean;
 	list: IPost[];
 	loading: boolean;
+	prevFilter: PostFilterTypes | null;
 };
 
 //
@@ -29,16 +30,36 @@ const initialState: PostsSlice = {
 	isEnd: false,
 	list: [],
 	loading: false,
+	prevFilter: null,
 };
 
 //
 // Thunk actions...
 const setPosts = createAsyncThunk(
 	'posts/setPosts',
-	async ({ cursor, filter, isAuthed }: IRetrievePosts) => {
-		console.log(cursor);
+	async (
+		{ cursor, filter, isAuthed }: IRetrievePosts,
+		{ dispatch, getState }
+	) => {
+		const {
+			posts: { prevFilter },
+		} = (await getState()) as RootState;
 
-		const response = await retrievePosts({ cursor, filter, isAuthed });
+		const sameFilter = prevFilter === filter;
+		!sameFilter && dispatch(resetPostsSlice());
+		dispatch(setPrevFilter(filter));
+		cursor = sameFilter ? cursor : null;
+
+		const response = await retrievePosts({
+			cursor,
+			filter,
+			isAuthed,
+		});
+
+		if (response.success && response.success.isEnd) {
+			dispatch(setIsEnd(true));
+		}
+
 		return response;
 	}
 );
@@ -64,10 +85,18 @@ export const postsSlice = createSlice({
 
 			return state;
 		},
-		resetPosts: state => {
-			state = initialState;
-
-			return state;
+		resetPostsSlice: state => ({
+			...initialState,
+			prevFilter: state.prevFilter,
+		}),
+		setIsEnd: (state, action: PayloadAction<boolean>) => {
+			state.isEnd = action.payload;
+		},
+		setPrevFilter: (
+			state,
+			action: PayloadAction<PostFilterTypes | null>
+		) => {
+			state.prevFilter = action.payload;
 		},
 		updatePost: (state, action: PayloadAction<IPost>) => {
 			state.list = state.list.map((post: IPost) =>
@@ -87,9 +116,6 @@ export const postsSlice = createSlice({
 				const { success } = action.payload;
 				state.list.push(...success.posts);
 				state.cursor = success.cursor;
-				if (success.isEnd) {
-					state.isEnd = true;
-				}
 			}
 		});
 		builder.addCase(setPosts.rejected, (state, action) => {
@@ -99,8 +125,14 @@ export const postsSlice = createSlice({
 	},
 });
 
-export const { addPost, removePost, resetPosts, updatePost } =
-	postsSlice.actions;
+export const {
+	addPost,
+	removePost,
+	resetPostsSlice,
+	setIsEnd,
+	setPrevFilter,
+	updatePost,
+} = postsSlice.actions;
 export { setPosts };
 export const postsReducer = postsSlice.reducer;
 

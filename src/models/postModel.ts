@@ -67,9 +67,7 @@ export enum PostFilterTypes {
 	USER = `user`,
 }
 
-interface IPostFilters {
-	[x: string]: boolean;
-}
+type PostFilters = Partial<Record<PostFilterTypes, boolean>>;
 
 export interface IPost {
 	background?: string;
@@ -77,7 +75,7 @@ export interface IPost {
 	content: IPostContent;
 	createdAt: number;
 	creator: IUser;
-	filters: IPostFilters;
+	filters: PostFilters;
 	id?: string;
 	updatedAt?: number;
 }

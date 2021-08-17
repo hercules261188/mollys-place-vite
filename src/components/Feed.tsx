@@ -3,7 +3,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { PostFilterTypes } from '../models';
 
-import { resetPosts, selectPosts, setPosts } from '../state/posts';
+import { resetPostsSlice, selectPosts, setPosts } from '../state/posts';
 import { selectUser } from '../state/user';
 
 import { Post } from './Post';
@@ -39,7 +39,7 @@ export const Feed: React.FC<IComponentProps> = ({ filter }) => {
 		}
 	};
 
-	// Setup and teardown of scroll event listener...
+	// Event listener setup and teardown...
 	React.useEffect(() => {
 		window.addEventListener('scroll', handleScroll);
 		return () => window.removeEventListener('scroll', handleScroll);
@@ -47,15 +47,14 @@ export const Feed: React.FC<IComponentProps> = ({ filter }) => {
 
 	// Initial load...
 	React.useEffect(() => {
-		getPosts();
-		return () => {
-			dispatch(resetPosts());
-		};
+		if (!cursor) {
+			getPosts();
+		}
 	}, []);
 
 	// Load more...
 	React.useEffect(() => {
-		if (cursor && !isEnd && !loading && nearBottom) {
+		if (!isEnd && !loading && cursor && nearBottom) {
 			console.log(`Load more...`);
 			getPosts();
 		}

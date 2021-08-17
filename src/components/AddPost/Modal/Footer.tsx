@@ -6,6 +6,7 @@ import { setSize } from '../../../helpers';
 import { useAddPost } from '../helpers';
 
 import { Text } from '../../Text';
+import { PostFilterTypes } from '../../../models';
 
 interface IComponentProps {
 	onClose: () => void;
@@ -13,15 +14,29 @@ interface IComponentProps {
 
 export const ModalFooter: React.FC<IComponentProps> = ({ onClose }) => {
 	const {
+		filters,
 		handleFilterSelect,
 		handleKeyPress,
 		handleSubmission,
 		handleSubmit,
 		isComposingImage,
+		isComposingRecipe,
 		isComposingVideo,
 		submission,
 	} = useAddPost();
 	const openImageSelectRef = React.useRef<HTMLInputElement>(null);
+
+	const currentCategory = filters.gaming
+		? PostFilterTypes.GAMING
+		: filters.kids
+		? PostFilterTypes.KIDS
+		: filters.recipe
+		? PostFilterTypes.RECIPE
+		: PostFilterTypes.GENERAL;
+
+	const currentVisibility = filters.public
+		? PostFilterTypes.PUBLIC
+		: PostFilterTypes.USER;
 
 	const handlePostSubmit = () => {
 		handleSubmit();
@@ -69,18 +84,24 @@ export const ModalFooter: React.FC<IComponentProps> = ({ onClose }) => {
 			<Flex flex={1} justifyContent="space-between">
 				<Flex>
 					<Select
+						disabled={filters.kids}
 						mr={setSize(Sizes.gap / 2)}
 						onChange={handleFilterSelect}
+						value={currentVisibility}
 						w="fit-content"
 					>
-						<option value="public">Public</option>
-						<option value="user">User</option>
+						<option value={PostFilterTypes.PUBLIC}>Public</option>
+						<option value={PostFilterTypes.USER}>User</option>
 					</Select>
-					<Select onChange={handleFilterSelect} w="fit-content">
-						<option value="general">General</option>
-						<option value="gaming">Gaming</option>
-						<option value="kids">Grandkids</option>
-						<option value="recipe">Recipe</option>
+					<Select
+						onChange={handleFilterSelect}
+						value={currentCategory}
+						w="fit-content"
+					>
+						<option value={PostFilterTypes.GENERAL}>General</option>
+						<option value={PostFilterTypes.GAMING}>Gaming</option>
+						<option value={PostFilterTypes.KIDS}>Grandkids</option>
+						<option value={PostFilterTypes.RECIPE}>Recipe</option>
 					</Select>
 				</Flex>
 				<Button

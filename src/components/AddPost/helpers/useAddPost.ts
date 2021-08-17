@@ -25,7 +25,7 @@ import {
 	toggleComposingVideo,
 } from '../../../state/system';
 import { selectUser } from '../../../state/user';
-import { processImage } from './utilities';
+import { preparePostFilters, processImage } from './utilities';
 
 export const useAddPost = () => {
 	const dispatch = useDispatch();
@@ -64,8 +64,11 @@ export const useAddPost = () => {
 			PostFilterTypes[
 				e.target.value.toUpperCase() as keyof typeof PostFilterTypes
 			];
-		const newFilter = filterKey;
-		dispatch(setPostFilter(newFilter));
+		const newFilters = preparePostFilters({
+			filters,
+			selected: filterKey,
+		});
+		dispatch(setPostFilter(newFilters));
 	};
 
 	const handleKeyPress: KeyboardEventHandler<HTMLInputElement> = e => {
@@ -129,6 +132,7 @@ export const useAddPost = () => {
 		background,
 		errMsg,
 		content,
+		filters,
 		handleBgChange,
 		handleCancel,
 		handleContentChange,
