@@ -33,6 +33,7 @@ export const Post: React.FC<IComponentProps> = ({ post }) => {
 			<PostHeader
 				creator={post.creator}
 				createdAt={post.createdAt}
+				filters={post.filters}
 				handleDelete={handleDelete}
 				pid={post.id}
 			/>

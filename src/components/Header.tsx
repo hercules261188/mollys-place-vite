@@ -9,13 +9,9 @@ import { SiteMenu, UserMenu } from './menus';
 
 interface IComponentProps {
 	isLargeScreen: boolean;
-	signOut: () => Promise<void>;
 }
 
-export const Header: React.FC<IComponentProps> = ({
-	isLargeScreen,
-	signOut,
-}) => (
+export const Header: React.FC<IComponentProps> = ({ isLargeScreen }) => (
 	<Flex
 		as="header"
 		bgGradient={Colors.gradient}
@@ -40,7 +36,7 @@ export const Header: React.FC<IComponentProps> = ({
 				<SiteLogo large />
 			</Flex>
 			<Flex>
-				<UserMenu signOut={signOut} />
+				<UserMenu />
 			</Flex>
 		</Flex>
 	</Flex>

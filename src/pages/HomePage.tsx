@@ -4,13 +4,7 @@ import React from 'react';
 import { Sizes, Strings } from '../constants';
 import { setSize } from '../helpers';
 
-import {
-	AddPostButton,
-	BannerImage,
-	Feed,
-	Overlay,
-	SiteMenu,
-} from '../components';
+import { BannerImage, Feed, Overlay, SiteMenu } from '../components';
 import { PostFilterTypes } from '../models';
 
 interface IComponentProps {}
@@ -37,7 +31,6 @@ export const HomePage: React.FC<IComponentProps> = () => {
 				<BannerImage {...featuredImage} overlay={Overlay.light} />
 				<Feed filter={PostFilterTypes.GENERAL} />
 			</Flex>
-			<AddPostButton />
 		</>
 	);
 };

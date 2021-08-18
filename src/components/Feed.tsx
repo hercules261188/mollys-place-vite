@@ -3,8 +3,9 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { PostFilterTypes } from '../models';
 
-import { resetPostsSlice, selectPosts, setPosts } from '../state/posts';
+import { selectPosts, setPosts } from '../state/posts';
 import { selectUser } from '../state/user';
+import { AddPostButton } from './AddPost';
 
 import { Post } from './Post';
 import { Text } from './Text';
@@ -61,26 +62,28 @@ export const Feed: React.FC<IComponentProps> = ({ filter }) => {
 	}, [nearBottom]);
 
 	return (
-		<Flex
-			alignItems="center"
-			as="section"
-			css={{ '&::-webkit-scrollbar': { display: 'none' } }}
-			flexDir="column"
-			ref={feedRef}
-			w="full"
-		>
-			{error ? (
-				<Flex>{error.message}</Flex>
-			) : (
-				list && list.map(post => <Post key={post.id} post={post} />)
-			)}
-			{isEnd && (
-				<Flex>
-					<Text fontFamily="Great Vibes" fontSize="2rem">
-						~ The End ~
-					</Text>
-				</Flex>
-			)}
+		<Flex alignItems="center" flexDir="column" w="full">
+			<Flex
+				alignItems="center"
+				css={{ '&::-webkit-scrollbar': { display: 'none' } }}
+				flexDir="column"
+				ref={feedRef}
+				w="full"
+			>
+				{error ? (
+					<Flex>{error.message}</Flex>
+				) : (
+					list && list.map(post => <Post key={post.id} post={post} />)
+				)}
+				{isEnd && (
+					<Flex>
+						<Text fontFamily="Great Vibes" fontSize="2rem">
+							~ The End ~
+						</Text>
+					</Flex>
+				)}
+			</Flex>
+			{currentUser && currentUser.role === `admin` && <AddPostButton />}
 		</Flex>
 	);
 };

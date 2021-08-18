@@ -1,8 +1,12 @@
-import { Spinner } from '@chakra-ui/react';
+import firebase from 'firebase';
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { Redirect, Route, Switch } from 'react-router-dom';
 
-import { Layout } from './components';
+import { auth } from './services';
+import { selectUser, setLoading, setUser } from './state/user';
+
+import { Layout, Loading } from './components';
 
 import {
 	GamingPage,
@@ -11,18 +15,41 @@ import {
 	RecipePage,
 	SignInPage,
 } from './pages';
-
-import { useAuth } from './services';
+import { resetPostsSlice } from './state/posts';
 
 interface IComponentProps {}
 
 export const App: React.FC<IComponentProps> = () => {
-	const { loading, signOut } = useAuth();
+	const { current: currentUser, error, loading } = useSelector(selectUser);
+	const dispatch = useDispatch();
+
+	React.useEffect(() => {
+		const getUser = () =>
+			new Promise(resolve => {
+				const unsubscribe = auth.onAuthStateChanged(firebaseUser => {
+					unsubscribe();
+					resolve(firebaseUser);
+				});
+			});
+
+		const init = async () => {
+			const firebaseUser = (await getUser()) as firebase.User;
+
+			if (firebaseUser) {
+				dispatch(setUser(firebaseUser.uid));
+			} else {
+				dispatch(setLoading(false));
+			}
+			dispatch(resetPostsSlice());
+		};
+
+		init();
+	}, []);
 
 	return loading ? (
-		<Spinner />
+		<Loading />
 	) : (
-		<Layout signOut={signOut}>
+		<Layout>
 			<Switch>
 				<Route path="/gaming">
 					<GamingPage />
@@ -34,7 +61,7 @@ export const App: React.FC<IComponentProps> = () => {
 					<RecipePage />
 				</Route>
 				<Route path="/signin">
-					<SignInPage />
+					{currentUser ? <Redirect to="/" /> : <SignInPage />}
 				</Route>
 				<Route path="/">
 					<HomePage />

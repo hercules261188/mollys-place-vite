@@ -18,14 +18,13 @@ import { useHistory } from 'react-router-dom';
 
 import { Colors, Sizes } from '../../constants';
 import { setSize } from '../../helpers';
+import { signOut } from '../../services';
 import { selectUser } from '../../state/user';
 import { ColorModeSwitcher } from '../ColorModeSwitcher';
 
-interface IComponentProps {
-	signOut: () => Promise<void>;
-}
+interface IComponentProps {}
 
-export const UserMenu: React.FC<IComponentProps> = ({ signOut }) => {
+export const UserMenu: React.FC<IComponentProps> = () => {
 	const switchText = useColorModeValue('dark', 'light');
 	const SwitchIcon = useColorModeValue(FaMoon, FaSun);
 	const { toggleColorMode } = useColorMode();
@@ -33,9 +32,12 @@ export const UserMenu: React.FC<IComponentProps> = ({ signOut }) => {
 	const { current: currentUser } = useSelector(selectUser);
 	const history = useHistory();
 
-	const handleLogIn = () => history.push('/signin');
+	const handleLogIn = () => history.push(`/signin`);
 
-	const handleLogOut = () => signOut();
+	const handleLogOut = async () => {
+		await signOut();
+		history.go(0);
+	};
 
 	return (
 		<>

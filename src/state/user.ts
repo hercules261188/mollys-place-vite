@@ -2,6 +2,7 @@ import {
 	createAsyncThunk,
 	createSelector,
 	createSlice,
+	PayloadAction,
 } from '@reduxjs/toolkit';
 
 import { IUsersResponse, retrieveUser } from '../services';
@@ -27,29 +28,35 @@ const initialState: UserSlice = {
 // Thunk actions...
 const setUser = createAsyncThunk(
 	`user/setCurrentUser`,
-	async (id: string | null) => {
-		const response = id ? await retrieveUser({ id }) : null;
-		return response;
-	}
+	async (id: string) => await retrieveUser({ id })
 );
+
 //
 // Reducer...
 export const userSlice = createSlice({
 	initialState,
 	name: `user`,
-	reducers: {},
+	reducers: {
+		setLoading: (state, action: PayloadAction<boolean>) => {
+			state.loading = action.payload;
+		},
+	},
 	extraReducers: builder => {
 		builder.addCase(setUser.pending, state => {
 			state.loading = true;
 		});
 		builder.addCase(setUser.fulfilled, (state, action) => {
-			if (!action.payload) {
-				state.current = null;
-			} else if (action.payload.failure) {
-				state.error = action.payload.failure;
+			console.log(action.payload);
+
+			const { failure, success } = action.payload;
+			if (failure) {
+				state.error = failure;
+			} else if (success) {
+				state.current = success;
 			} else {
-				state.current = action.payload.success;
+				state.current = null;
 			}
+
 			if (state.loading) state.loading = false;
 		});
 		builder.addCase(setUser.rejected, (state, action) => {
@@ -59,6 +66,7 @@ export const userSlice = createSlice({
 	},
 });
 
+export const { setLoading } = userSlice.actions;
 export { setUser };
 
 export const userReducer = userSlice.reducer;

@@ -5,17 +5,19 @@ import {
 	FormHelperText,
 	FormLabel,
 	Input,
-	Text,
 	useMediaQuery,
 } from '@chakra-ui/react';
 import React from 'react';
+import { useDispatch } from 'react-redux';
 
-import { BannerImage, Overlay } from '../components';
 import { Sizes, Strings } from '../constants';
 import { setSize } from '../helpers';
 
 import { IUserCredentials } from '../models';
-import { useAuth } from '../services';
+import { signIn } from '../services';
+import { setLoading, setUser } from '../state/user';
+
+import { BannerImage, Overlay, Text } from '../components';
 
 interface IComponentProps {}
 
@@ -24,6 +26,8 @@ export const SignInPage: React.FC<IComponentProps> = () => {
 		`(min-width: ${Sizes.breakPoint}px)`
 	);
 
+	const dispatch = useDispatch();
+
 	const INITIAL_STATE: IUserCredentials = {
 		email: ``,
 		password: ``,
@@ -31,7 +35,8 @@ export const SignInPage: React.FC<IComponentProps> = () => {
 	const [credentials, setCredentials] = React.useState(INITIAL_STATE);
 	const { email, password } = credentials;
 
-	const { signIn } = useAuth();
+	const [errMsg, setErrMsg] = React.useState(``);
+	const [submitted, setSubmitted] = React.useState(false);
 
 	const {
 		signInPageBannerImage,
@@ -41,10 +46,31 @@ export const SignInPage: React.FC<IComponentProps> = () => {
 	const handleChange: React.ChangeEventHandler<HTMLInputElement> = e =>
 		setCredentials({ ...credentials, [e.target.name]: e.target.value });
 
-	const handleSubmit: React.FormEventHandler<HTMLDivElement> = e => {
+	const handleSubmit: React.FormEventHandler<HTMLDivElement> = async e => {
 		e.preventDefault();
-		signIn(credentials);
+		setSubmitted(true);
 	};
+
+	React.useEffect(() => {
+		const processSubmit = async () => {
+			console.log(`processSignIn`);
+
+			dispatch(setLoading(true));
+			const response = await signIn(credentials);
+			if (response.failure) {
+				setErrMsg(response.failure);
+			} else if (response.success) {
+				if (response.success.user) {
+					const id = response.success.user.uid;
+					dispatch(setUser(id));
+				}
+			}
+		};
+		if (submitted) {
+			processSubmit();
+			setSubmitted(false);
+		}
+	}, [submitted]);
 
 	return (
 		<>
@@ -101,6 +127,11 @@ export const SignInPage: React.FC<IComponentProps> = () => {
 								value={password}
 							/>
 						</FormControl>
+						{errMsg && (
+							<Flex>
+								<Text>{errMsg}</Text>
+							</Flex>
+						)}
 						<Button mt={setSize(Sizes.gap * 1.5)} type="submit">
 							Submit
 						</Button>

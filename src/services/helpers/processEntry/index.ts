@@ -2,7 +2,10 @@ import { v4 as uuid } from 'uuid';
 
 import { IPost, IPostComment, IPostReply, IUser } from '../../../models';
 
-import { assemblePostObject } from './assembly';
+import {
+	assembleCommentReplyObject,
+	assemblePostObject,
+} from './assembly';
 import { removeCommentOrReply } from './removeCommentOrReply';
 
 export interface IProcessEntryProps {
@@ -24,7 +27,7 @@ export const processEntry = ({
 	cid,
 	content,
 	creator,
-	filters,
+	filters = {},
 	post,
 	rid,
 	update,
@@ -33,7 +36,11 @@ export const processEntry = ({
 
 	if (!post && content) {
 		console.log(`Creating new post...`);
-		const _newPost = assemblePostObject({ content, creator, filters });
+		const _newPost = assemblePostObject({
+			content,
+			creator,
+			filters,
+		}) as IPost;
 		if (background) _newPost.background = background;
 
 		_postObj = _newPost;
@@ -56,19 +63,19 @@ export const processEntry = ({
 					...post,
 					comments: {
 						...post.comments,
-						[uuid()]: assemblePostObject({
+						[uuid()]: assembleCommentReplyObject({
 							content: _updatedContent,
 							creator,
-						}) as unknown as IPostComment,
+						}) as IPostComment,
 					},
 			  }
 			: {
 					...post,
 					comments: {
-						[uuid()]: assemblePostObject({
+						[uuid()]: assembleCommentReplyObject({
 							content: _updatedContent,
 							creator,
-						}) as unknown as IPostComment,
+						}) as IPostComment,
 					},
 			  };
 
@@ -113,19 +120,19 @@ export const processEntry = ({
 							...post!.comments![cid],
 							replies: {
 								...post!.comments![cid].replies,
-								[uuid()]: assemblePostObject({
+								[uuid()]: assembleCommentReplyObject({
 									content: _updatedContent,
 									creator,
-								}) as unknown as IPostReply,
+								}) as IPostReply,
 							},
 					  }
 					: {
 							...post!.comments![cid],
 							replies: {
-								[uuid()]: assemblePostObject({
+								[uuid()]: assembleCommentReplyObject({
 									content: _updatedContent,
 									creator,
-								}) as unknown as IPostReply,
+								}) as IPostReply,
 							},
 					  },
 			},

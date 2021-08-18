@@ -1,16 +1,19 @@
 import { Avatar, Flex, Icon, IconButton, Text } from '@chakra-ui/react';
 import moment from 'moment';
 import React from 'react';
-import { FiUsers } from 'react-icons/fi';
+import { FiGlobe, FiUsers } from 'react-icons/fi';
 
 import { setSize } from '../../helpers';
 import { IPost, IUser } from '../../models';
 import { Colors, Sizes } from '../../constants';
 import { MoreMenu } from '../menus/MoreMenu';
+import { useSelector } from 'react-redux';
+import { selectUser } from '../../state/user';
 
 interface IComponentProps {
 	createdAt: IPost['createdAt'];
 	creator: IUser;
+	filters: IPost['filters'];
 	handleDelete: (id: string) => void;
 	pid: IPost['id'];
 }
@@ -18,9 +21,18 @@ interface IComponentProps {
 export const PostHeader: React.FC<IComponentProps> = ({
 	createdAt,
 	creator,
+	filters,
 	handleDelete,
 	pid,
 }) => {
+	const { current: currentUser } = useSelector(selectUser);
+	const isOwner = creator.id === currentUser?.id;
+
+	const VisibilityIcon = filters.public ? FiGlobe : FiUsers;
+	const visibilityLabel = filters.public
+		? `public post`
+		: `users only post`;
+
 	return (
 		<Flex
 			bgGradient={Colors.gradient}
@@ -54,10 +66,10 @@ export const PostHeader: React.FC<IComponentProps> = ({
 							fontWeight="hairline"
 						>{`${moment(createdAt).fromNow()} · `}</Text>
 						<IconButton
-							aria-label="molly's friends"
+							aria-label={visibilityLabel}
 							icon={
 								<Icon
-									as={FiUsers}
+									as={VisibilityIcon}
 									color={Colors.dark.secondaryTextColor}
 									h={setSize(0.8)}
 									w={setSize(0.8)}
@@ -72,7 +84,7 @@ export const PostHeader: React.FC<IComponentProps> = ({
 					</Flex>
 				</Flex>
 			</Flex>
-			<MoreMenu handleDelete={handleDelete} pid={pid} />
+			{isOwner && <MoreMenu handleDelete={handleDelete} pid={pid} />}
 		</Flex>
 	);
 };

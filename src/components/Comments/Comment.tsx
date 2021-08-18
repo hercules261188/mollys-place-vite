@@ -28,6 +28,9 @@ export const Comment: React.FC<IComponentProps> = ({ comment, post }) => {
 	});
 
 	const { current: currentUser } = useSelector(selectUser);
+	const isAdmin = currentUser?.role === `admin`;
+	const isOwner = comment.creator.id === currentUser?.id;
+	const canModify = isAdmin || isOwner;
 
 	const bgColor = useColorModeValue(
 		Colors.light.surfaceColor,
@@ -59,7 +62,13 @@ export const Comment: React.FC<IComponentProps> = ({ comment, post }) => {
 						>
 							<Text color={color}>{comment.content}</Text>
 						</Flex>
-						<MoreMenu cid={comment.id} handleDelete={handleDelete} small />
+						{canModify && (
+							<MoreMenu
+								cid={comment.id}
+								handleDelete={handleDelete}
+								small
+							/>
+						)}
 					</Flex>
 				)}
 				<Flex fontSize="small" ml={setSize(Sizes.gap / 3)}>

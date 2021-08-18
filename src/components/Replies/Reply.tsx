@@ -4,7 +4,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 import { setSize } from '../../helpers';
-import { IPost, IPostComment, IPostReply, IUser } from '../../models';
+import { IPost, IPostComment, IPostReply } from '../../models';
 import { Colors, Sizes } from '../../constants';
 
 import { AvatarDisplay } from '../displays';
@@ -21,6 +21,10 @@ interface IComponentProps {
 
 export const Reply: React.FC<IComponentProps> = ({ cid, reply, post }) => {
 	const { current: currentUser } = useSelector(selectUser);
+	const isAdmin = currentUser?.role === `admin`;
+	const isOwner = reply.creator.id === currentUser?.id;
+	const canModify = isAdmin || isOwner;
+
 	const { handleDelete, isEditing, toggleIsReplying } = useReply({
 		cid,
 		creator: currentUser!,
@@ -59,7 +63,9 @@ export const Reply: React.FC<IComponentProps> = ({ cid, reply, post }) => {
 						>
 							<Text color={color}>{reply.content}</Text>
 						</Flex>
-						<MoreMenu handleDelete={handleDelete} rid={reply.id} small />
+						{canModify && (
+							<MoreMenu handleDelete={handleDelete} rid={reply.id} small />
+						)}
 					</Flex>
 				)}
 				<Flex fontSize="small" ml={setSize(Sizes.gap / 3)}>
