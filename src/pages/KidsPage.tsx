@@ -1,20 +1,20 @@
 import { Flex, useMediaQuery } from '@chakra-ui/react';
 import React from 'react';
 
-import { Sizes, Strings } from '../constants';
+import { Sizes } from '../constants';
 import { setSize } from '../helpers';
 
 import { BannerImage, Feed, Overlay, SiteMenu } from '../components';
-import { PostFilterTypes } from '../models';
+import { IBanner, PostFilterTypes } from '../models';
 
-interface IComponentProps {}
+interface IComponentProps {
+	banner: IBanner;
+}
 
-export const KidsPage: React.FC<IComponentProps> = () => {
+export const KidsPage: React.FC<IComponentProps> = ({ banner }) => {
 	const [isLargeScreen] = useMediaQuery(
 		`(min-width: ${Sizes.breakPoint}px)`
 	);
-
-	const { featuredImage } = Strings;
 
 	return (
 		<>
@@ -28,7 +28,7 @@ export const KidsPage: React.FC<IComponentProps> = () => {
 				mx={setSize(Sizes.gap)}
 				pl={isLargeScreen ? setSize(Sizes.gap) : 0}
 			>
-				<BannerImage {...featuredImage} overlay={Overlay.light} />
+				<BannerImage {...banner} id="kids" overlay={Overlay.light} />
 				<Feed filter={PostFilterTypes.KIDS} />
 			</Flex>
 		</>

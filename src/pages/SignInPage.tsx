@@ -13,15 +13,17 @@ import { useDispatch } from 'react-redux';
 import { Sizes, Strings } from '../constants';
 import { setSize } from '../helpers';
 
-import { IUserCredentials } from '../models';
+import { IBanner, IUserCredentials } from '../models';
 import { signIn } from '../services';
 import { setLoading, setUser } from '../state/user';
 
 import { BannerImage, Overlay, Text } from '../components';
 
-interface IComponentProps {}
+interface IComponentProps {
+	banner: IBanner;
+}
 
-export const SignInPage: React.FC<IComponentProps> = () => {
+export const SignInPage: React.FC<IComponentProps> = ({ banner }) => {
 	const [isLargeScreen] = useMediaQuery(
 		`(min-width: ${Sizes.breakPoint}px)`
 	);
@@ -39,7 +41,6 @@ export const SignInPage: React.FC<IComponentProps> = () => {
 	const [submitted, setSubmitted] = React.useState(false);
 
 	const {
-		signInPageBannerImage,
 		site: { name },
 	} = Strings;
 
@@ -82,7 +83,7 @@ export const SignInPage: React.FC<IComponentProps> = () => {
 					onSubmit={handleSubmit}
 					w="full"
 				>
-					<BannerImage {...signInPageBannerImage} overlay={Overlay.medium}>
+					<BannerImage {...banner} id="signIn" overlay={Overlay.medium}>
 						<Flex alignItems="center" flex={1} justifyContent="center">
 							<Text
 								fontFamily="Great Vibes"

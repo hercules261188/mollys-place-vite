@@ -5,11 +5,13 @@ import { Sizes, Strings } from '../constants';
 import { setSize } from '../helpers';
 
 import { BannerImage, Feed, Overlay, SiteMenu } from '../components';
-import { PostFilterTypes } from '../models';
+import { IBanner, PostFilterTypes } from '../models';
 
-interface IComponentProps {}
+interface IComponentProps {
+	banner: IBanner;
+}
 
-export const GamingPage: React.FC<IComponentProps> = () => {
+export const GamingPage: React.FC<IComponentProps> = ({ banner }) => {
 	const [isLargeScreen] = useMediaQuery(
 		`(min-width: ${Sizes.breakPoint}px)`
 	);
@@ -28,7 +30,7 @@ export const GamingPage: React.FC<IComponentProps> = () => {
 				mx={setSize(Sizes.gap)}
 				pl={isLargeScreen ? setSize(Sizes.gap) : 0}
 			>
-				<BannerImage {...featuredImage} overlay={Overlay.light} />
+				<BannerImage {...banner} id="gaming" overlay={Overlay.light} />
 				<Feed filter={PostFilterTypes.GAMING} />
 			</Flex>
 		</>

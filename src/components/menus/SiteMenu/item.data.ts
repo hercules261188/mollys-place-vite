@@ -3,6 +3,7 @@ import { BiGame } from 'react-icons/bi';
 import { GoNote } from 'react-icons/go';
 import { MdChildCare } from 'react-icons/md';
 import { RiHomeHeartLine } from 'react-icons/ri';
+import { SiAboutDotMe } from 'react-icons/si';
 
 export interface IMenuItem {
 	icon: IconType;
@@ -21,4 +22,5 @@ export const menuItems: IMenuItem[] = [
 	},
 	{ icon: BiGame, id: 'gaming', label: 'Gaming', path: '/gaming' },
 	{ icon: GoNote, id: 'recipes', label: 'Recipes', path: '/recipes' },
+	{ icon: SiAboutDotMe, id: 'about', label: 'About', path: '/about' },
 ];

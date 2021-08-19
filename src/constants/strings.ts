@@ -3,6 +3,7 @@ export const Strings = {
 		details: `A personal blog site.`,
 		initials: `MP`,
 		name: `Molly's Place`,
+		owner: `Molly`,
 	},
 	// Temporary below this point...
 	featuredImage: {

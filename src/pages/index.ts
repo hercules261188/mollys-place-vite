@@ -1,3 +1,4 @@
+export * from './AboutPage';
 export * from './GamingPage';
 export * from './HomePage';
 export * from './KidsPage';
